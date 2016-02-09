@@ -32,7 +32,7 @@ body {
 body {
   color: #fff;
   text-align: center;
-  background: url(background.jpeg) no-repeat center center fixed;
+  background: url(../res/background.jpeg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
