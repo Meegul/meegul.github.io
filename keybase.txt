@@ -1,0 +1,68 @@
+==================================================================
+https://keybase.io/meegul
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://michaelbilstein.com
+  * I am meegul (https://keybase.io/meegul) on keybase.
+  * I have a public key with fingerprint 633D 80D6 4B3F 5707 8714  4C82 0DDA 1A74 4CBB 2838
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "0101fe3eb38e8ed4a85eb53a540ff7cce5c457e4e4ce1c7f37ee7da9ae92239a8f9a0a",
+            "fingerprint": "633d80d64b3f570787144c820dda1a744cbb2838",
+            "host": "keybase.io",
+            "key_id": "0dda1a744cbb2838",
+            "kid": "0101fe3eb38e8ed4a85eb53a540ff7cce5c457e4e4ce1c7f37ee7da9ae92239a8f9a0a",
+            "uid": "a85836d29e422f8b72b3c3b642acda19",
+            "username": "meegul"
+        },
+        "service": {
+            "hostname": "michaelbilstein.com",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1470793369,
+    "expire_in": 157680000,
+    "prev": "5dad79da593177d84d30ec005947ed6accf2e1adc8dee3437e51b50672d57725",
+    "seqno": 2,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.0.55
+Comment: https://keybase.io/crypto
+
+yMIuAnicrVJbSBRRGF7TyrYyS4goIpqgq8nMnJk5M1uQBVmmUVTgi7GeOeef3aF1
+ZtudXQszLFMqKKILaAUZSZRCRRfMeuiCdHPpYphULxEUVFTaQzdIOtPlqdfOyznn
+P9/3ne//+LvHZgeCWQ+c519/vF/3JKvnxpFUoKK9qaVWMF22WQjVChvg1wYxBkkv
+vMFmQkgQJVGyAIGJdNCBKURXwVQRURXRsjCloFJFxaCAQkGi2EIYADNiEDBkGRlE
+twwiEqFQsGwnAol4wnY8LqshxHSRaYqJLBWLWMeSolBdFhkjEsH8bJqyjnROjLpJ
+n8HNmSQJRbbLa/wS/m3vX/x/9p36JcfpOtKYbIAiy5ZuYtlEFJmaIhPKHRg+MAkJ
+h1QDR1cDRFIxoa5Q4LW0TcGP1e/j77tNowRiph1LemA7RdSt5gLxhOu51I1xQNTz
+4iGf722O+4QaMMN/pMKm7TCeJSekIZG0XUcISRxJPdvXlhSepoGQZhQKsCluJyBs
++wgVa7rIl/8NpLmkygjDBiOqgSSMma4wJAIVRdVQMDCNUGrJIBFGdQaAFJ6PKpmq
+qGGZqRjLquA3t9FxhZDMbZIIl0zaEYd4qQQIdTevV+YEsoKBEcOH+TMWCI7K/zt5
+z4pzAwcyr9fvO9R8/+GIxplTSgoWdO/QLl1um2YVbf3Q1Nu5/GPTi5cHd5Q03PMm
+rV1RftKc3v3darqWzsxdXNAo9bnRqpL67DbvSjxytKtMqnxbPPmQfKH1ztRHn4rE
+t8FlXeHBverIU1dXDQ0tqerYvufA0vENKxYezy7riHxJnfhx8NVA1eLQaNx2bGXe
+3ruh3Rd39g3M3rJ6olte097fcas3Lyd/2+DY7531ufvPZs6cHbmo+V6gkVREt7wp
+zRmU5yw9d/vzlKGS3qela/rqB560mP014zoew81zp+t65jacyb2dHv6ivGfMYbJq
+gnS/Ipg5P390+7z+GbuK392Z1VLQeuVd1c7Mt5+09Eqn
+=eKFV
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/meegul
+
+==================================================================
