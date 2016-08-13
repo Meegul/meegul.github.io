@@ -72,7 +72,10 @@ html, body {
 }
 
 .top-main .center-text {
-    padding: 25vh 0;
+    top: 25vh;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
     position: relative;
     text-align: center;
 }
@@ -116,12 +119,15 @@ a {
     text-decoration: none;
 }
 
-#particle-canvas {
+#particles-js {
     width: 100%;
     height: 100%;
     position: absolute;
+    text-align: center;
 }
 
 canvas {
     position: absolute;
+    display: block;
+    top: 0;
 }
