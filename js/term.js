@@ -6,6 +6,10 @@ var commandStack = []; //Remembers previous commands.
 var lookingAtCommand = 0; //Command index that is currently in the input.
 var currentCommand = ""; //Saves a command that has not been entered yet when going through the history/
 
+document.onclick = function() {
+    document.getElementById("input").focus();
+}
+
 document.getElementById("input").onkeydown = function(event) {
     var input = document.getElementById("input");
     switch (event.keyCode) {
@@ -34,7 +38,7 @@ function enter(input) {
     commandStack.push(input.value); //Pushes current command to the command stack.
     addHistory(input.value); //Adds the inputted command to the history in the DOM.
     var result = parseInput(input.value); //Executes command, if possible
-    addHistory(result); //Adds result of command to history, if one is given.
+    addHistory(result); //Adds result of command to history in the DOM, if one is given.
 }
 
 function upKey() {
