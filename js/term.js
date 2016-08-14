@@ -1,10 +1,10 @@
-var histNum = 0;
-var currDir = "~";
-var dirStack = [];
-var commandNum = 0;
-var commandStack = [];
-var lookingAtCommand = 0;
-var currentCommand = "";
+var histNum = 0; //Total number of history elements.
+var currDir = "~"; //Top of the dirStack.
+var dirStack = []; //Stack of current directory chain
+var commandNum = 0; //Total number of commands.
+var commandStack = []; //Remembers previous commands.
+var lookingAtCommand = 0; //Command index that is currently in the input.
+var currentCommand = ""; //Saves a command that has not been entered yet when going through the history/
 
 document.getElementById("input").onkeydown = function(event) {
     var input = document.getElementById("input");
@@ -23,13 +23,18 @@ document.getElementById("input").onkeydown = function(event) {
     }
 }
 
+/**
+ * Handles what happens when the enter key is pressed.
+ * Doesn't return anything.
+ */
+
 function enter(input) {
     commandNum++;
-    lookingAtCommand = commandNum;
-    commandStack.push(input.value);
-    addHistory(input.value);
-    var result = parseInput(input.value);
-    addHistory(result);
+    lookingAtCommand = commandNum; //Set in order to both reset what part of the history we are looking at and increase to new max.
+    commandStack.push(input.value); //Pushes current command to the command stack.
+    addHistory(input.value); //Adds the inputted command to the history in the DOM.
+    var result = parseInput(input.value); //Executes command, if possible
+    addHistory(result); //Adds result of command to history, if one is given.
 }
 
 function upKey() {
@@ -46,11 +51,16 @@ function downKey() {
     if (lookingAtCommand < commandNum - 1) {
         lookingAtCommand++;
         input.value = commandStack[lookingAtCommand];
-    } else if (lookingAtCommand === commandNum - 1) {
+    } else if (lookingAtCommand === commandNum - 1) { //We can assume that if this is ever true, that the user has hit the up key before, meaning we have a command saved to restore.
         lookingAtCommand++;
         input.value = currentCommand;
     }
 }
+
+/**
+ * Method to parse input after enter key is pressed.
+ * Returns what is to be printed after the directory.
+ */
 
 function parseInput(input) {
     var inArr = input.split(" ");
@@ -96,7 +106,7 @@ function cd(input) {
         currDir = input;
         document.getElementById("headInfo").innerHTML = currDir;
     }
-    return("nonono");
+    return("nonono"); //Returns this value to signify that this command has no output.
 }
 
 function pwd() {
