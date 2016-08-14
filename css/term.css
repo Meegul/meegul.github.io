@@ -12,8 +12,10 @@ p {
 }
 
 input {
+    padding: 0;
     background: #222;
-    border: 0;
     color: #bbb;
     font-family: monospace;
+    border: 0;
+    outline: none;
 }
