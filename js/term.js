@@ -108,6 +108,7 @@ function addHistory(result) {
         newParent.appendChild(newChild);
         history.appendChild(newParent);
     }
+    window.scrollTo(0,document.body.scrollHeight);
 }
 
 function clearInput() {
@@ -189,5 +190,6 @@ function oneLine(message) {
     newParent.appendChild(newChild);
     history.appendChild(newParent);
     clearInput();
+    window.scrollTo(0,document.body.scrollHeight);
     return('nonono');
 }
