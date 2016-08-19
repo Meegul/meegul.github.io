@@ -137,7 +137,7 @@ function cd(input) {
         dirStack.push(input);
         document.getElementById("headInfo").innerHTML = dirStack.slice(-1)[0];
     } else {
-        return ("Directory not found.")
+        oneLine("cd: No such file or directory: " + input);
     }
     return("nonono"); //Returns this value to signify that this command has no output.
 }
