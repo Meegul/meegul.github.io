@@ -59,7 +59,7 @@ function downKey() {
         lookingAtCommand++;
         input.value = commandStack[lookingAtCommand];
     } else if (lookingAtCommand === commandNum - 1) { //We can assume that if this is ever true, that the user has hit the up key before, meaning we have a command saved to restore.
-        lookingAtCommand++;
+        lookingAtCommand++;                           //If that's not true... well, that's quite a shame.
         input.value = currentCommand;
     }
 }
@@ -147,12 +147,7 @@ function pwd() {
 }
 
 function ls() {
-    var fullDir = pwd();
-    var lookingAt = fileStructure['/'];
-    fullDir.split('/').forEach(function(element) {
-        if (lookingAt[element] != undefined)
-            lookingAt = lookingAt[element];
-    }, this);
+    var lookingAt = retTopObj();
     Object.keys(lookingAt).forEach(function(element) {
         oneLine(element);
     }, this);
@@ -160,14 +155,23 @@ function ls() {
 }
 
 function mkdir(input) {
+    var lookingAt = retTopObj();
+    lookingAt[input] = new Object();
+    return ('nonono');
+}
+
+/**
+ * Helper function to return the topmost folder that the user is looking at.
+ */
+
+function retTopObj() {
     var fullDir = pwd();
     var lookingAt = fileStructure['/'];
     fullDir.split('/').forEach(function(element) {
         if (lookingAt[element] != undefined)
             lookingAt = lookingAt[element];
     }, this);
-    lookingAt[input] = new Object();
-    return ('nonono');
+    return lookingAt;
 }
 
 
