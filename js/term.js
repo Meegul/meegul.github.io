@@ -82,7 +82,7 @@ function parseInput(input) {
         case 'mkdir':
             return mkdir(inArr[1]);
         default:
-            return oneLine('Command not found: ' + input);
+            return oneLine('Command not found: ' + input.split(' ')[0]);
     }
 }
 
