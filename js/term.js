@@ -133,8 +133,7 @@ function cd(input) {
     } else if(input === '/') {
         dirStack = ['/'];
         document.getElementById("headInfo").innerHTML = dirStack.slice(-1)[0];
-    }
-        else if (lookingAt[input] != undefined){
+    } else if (lookingAt[input] != undefined){
         dirStack.push(input);
         document.getElementById("headInfo").innerHTML = dirStack.slice(-1)[0];
     } else {
@@ -157,7 +156,11 @@ function ls() {
 
 function mkdir(input) {
     var lookingAt = retTopObj();
-    lookingAt[input] = new Object();
+    if (lookingAt[input] == undefined) { //Only creates new hash if key doesn't already exist.
+        lookingAt[input] = new Object();
+    } else {
+        oneLine("Cannot create directory '" + input + "': File exists");
+    }
     return ('nonono');
 }
 
