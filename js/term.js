@@ -71,7 +71,7 @@ function downKey() {
  */
 
 function parseInput(input) {
-    var inArr = input.split(" ");
+    var inArr = input.split(' ');
     switch (inArr[0]) {
         case 'cd':
             return cd(inArr[1]);
@@ -82,7 +82,7 @@ function parseInput(input) {
         case 'mkdir':
             return mkdir(inArr[1]);
         default:
-            return oneLine('Command not found: ' + input.split(' ')[0]);
+            return oneLine('Command not found: ' + inArr[0]);
     }
 }
 
