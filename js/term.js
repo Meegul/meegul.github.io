@@ -1,10 +1,13 @@
 var histNum = 0; //Total number of history elements.
-var currDir = "~"; //Top of the dirStack.
-var dirStack = []; //Stack of current directory chain
+var topDir = ""; //Top of the dirStack.
+var dirStack = ['/']; //Stack of current directory chain.
 var commandNum = 0; //Total number of commands.
 var commandStack = []; //Remembers previous commands.
 var lookingAtCommand = 0; //Command index that is currently in the input.
 var currentCommand = ""; //Saves a command that has not been entered yet when going through the history/
+var fileStructure = new Object();
+fileStructure['/'] = new Object();
+
 
 document.onclick = function() {
     document.getElementById("input").focus();
@@ -64,6 +67,7 @@ function downKey() {
 /**
  * Method to parse input after enter key is pressed.
  * Returns what is to be printed after the directory.
+ * Only accepts valid commands.
  */
 
 function parseInput(input) {
@@ -72,19 +76,30 @@ function parseInput(input) {
         case 'cd':
             return cd(inArr[1]);
         case 'pwd':
-            return pwd();
+            return oneLine(pwd());
+        case 'ls':
+            return ls(inArr[1]);
+        case 'mkdir':
+            return mkdir(inArr[1]);
         default:
-            return "Unrecognized command";
+            return oneLine('Command not found.');
     }
 }
+
+/**
+ * Creates a new history item that is only one line with the message passed.
+ * DOES include the current top directory in the output.
+ */
 
 function addHistory(result) {
     var history = document.getElementById("history");
     var newParent = document.createElement("div");
     var newChild = document.createElement("p");
     var input = document.getElementById("input");
-
-    newChild.innerHTML = currDir + " " + result;
+    if (dirStack.slice(-1)[0] === undefined)
+        newChild.innerHTML = '/' + " " + result;
+    else
+        newChild.innerHTML = dirStack.slice(-1)[0] + " " + result;
     if (result != input.value) {
         clearInput();
     }
@@ -101,18 +116,74 @@ function clearInput() {
 }
 
 function cd(input) {
+    var fullDir = pwd();
+    var lookingAt = fileStructure['/'];
+    fullDir.split('/').forEach(function(element) {
+        if (lookingAt[element] != undefined)
+            lookingAt = lookingAt[element];
+    }, this);
     if (input === '..') {
-        alert(dirStack);
-        currDir = dirStack.pop();
-        document.getElementById("headInfo").innerHTML = currDir;
+        if (dirStack.slice(-1)[0] != dirStack[0]) { //Ensures user does not navigate past root directory.
+            dirStack.pop();
+            document.getElementById("headInfo").innerHTML = dirStack.slice(-1)[0];
+        } else {
+            clearInput();
+        }
+    } else if(input === '/') {
+        dirStack = ['/'];
+        document.getElementById("headInfo").innerHTML = dirStack.slice(-1)[0];
+    }
+        else if (lookingAt[input] != undefined){
+        dirStack.push(input);
+        document.getElementById("headInfo").innerHTML = dirStack.slice(-1)[0];
     } else {
-        dirStack.push(currDir);
-        currDir = input;
-        document.getElementById("headInfo").innerHTML = currDir;
+        return ("Directory not found.")
     }
     return("nonono"); //Returns this value to signify that this command has no output.
 }
 
 function pwd() {
-    return dirStack.join('/') + '/' + currDir;
+    return '/' + dirStack.slice(1).join('/');
+}
+
+function ls() {
+    var fullDir = pwd();
+    var lookingAt = fileStructure['/'];
+    fullDir.split('/').forEach(function(element) {
+        if (lookingAt[element] != undefined)
+            lookingAt = lookingAt[element];
+    }, this);
+    Object.keys(lookingAt).forEach(function(element) {
+        oneLine(element);
+    }, this);
+    return 'nonono';
+}
+
+function mkdir(input) {
+    var fullDir = pwd();
+    var lookingAt = fileStructure['/'];
+    fullDir.split('/').forEach(function(element) {
+        if (lookingAt[element] != undefined)
+            lookingAt = lookingAt[element];
+    }, this);
+    lookingAt[input] = new Object();
+    return ('nonono');
+}
+
+
+/**
+ * Creates a new history item that is only one line with the message passed.
+ * Useful for when you don't want to include the current top directory.
+ */
+
+function oneLine(message) {
+    var history = document.getElementById("history");
+    var newParent = document.createElement("div");
+    var newChild = document.createElement("p");
+    newChild.innerHTML = message;
+    newParent.id = "his" + histNum++;
+    newParent.appendChild(newChild);
+    history.appendChild(newParent);
+    clearInput();
+    return('nonono');
 }
