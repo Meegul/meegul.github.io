@@ -9,6 +9,14 @@ p {
     display: inline-block;
     color: #bbb;
     margin: .5em 0;
+    max-width: 50em;
+}
+
+h2 {
+    color: #bbb;
+    margin: .5em 0;
+    max-width: 50em;
+    font-size: 1em;
 }
 
 input {
