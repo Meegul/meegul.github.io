@@ -11,6 +11,7 @@ var initSnow = function() {
 }
 
 $(document).ready(function() {
+    $("#top").parallax({imageSrc: 'img/bg.jpg', speed: 0.1, bleed: 75});
     $("#aboutnav").click(function(el) {
         $('html, body').animate({
             scrollTop: $("#whoami").offset().top
