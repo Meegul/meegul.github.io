@@ -13,11 +13,11 @@
         <h1 class="text-center">Chrome Memory Leak</h1>
         <h5 class="text-center">Michael Bilstein - September 21st, 2016</h5>
         <p>This page shows a memory leak in Chrome 53.</p>
+        <h2 class="text-center">JUST KIDDING. THIS ACTUALLY HAPPENS EVERYWHERE. Just refresh a page a few times. Memory won't decrease until you go to another domain.</h2>
         <p>In order to reproduce the leak, just block the images from this site by clicking on the information icon next to the link in the omnibar. Once you have blocked images, just keep refreshing the page and watch the memory usage increase.</p>
         <h3 class="text-center">The problem:</h3>
         <p>Nodes with blocked images do not get deleted/dereferenced when the user navigates to another page.</p>
         <p>The entire page cannot then be dereferenced.</p>
-        <p>This only appears to happen when a picture fails to load due to the user blocking all pictures.</p>
         <p>The memory usage will continue to rise as the user encounters more of these nodes, until the window is closed.</p>
         <h3 class="text-center">What I believe causes this leak:</h3>
         <p>The problematic nodes are not able to be deleted by the garbage collector because they still reference elements that are waiting for an image to load.</p>
