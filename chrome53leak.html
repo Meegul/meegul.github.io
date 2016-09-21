@@ -14,6 +14,7 @@
         <h5 class="text-center">Michael Bilstein - September 21st, 2016</h5>
         <p>This page shows a memory leak in Chrome 53.</p>
         <h2 class="text-center">JUST KIDDING. THIS ACTUALLY HAPPENS EVERYWHERE. Just refresh a page a few times. Memory won't decrease until you go to another domain.</h2>
+        <h2 class="text-center">See <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=270000&can=2&q=270000&colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified">chromium bug 270000</a> for more information</h2>
         <p>In order to reproduce the leak, just block the images from this site by clicking on the information icon next to the link in the omnibar. Once you have blocked images, just keep refreshing the page and watch the memory usage increase.</p>
         <h3 class="text-center">The problem:</h3>
         <p>Nodes with blocked images do not get deleted/dereferenced when the user navigates to another page.</p>
