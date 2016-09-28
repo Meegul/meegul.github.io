@@ -3,6 +3,7 @@ body {
     height: 100%;
     background: #222;
     font-family: monospace;
+    font-size: 1em;
 }
 
 p {
@@ -26,4 +27,5 @@ input {
     font-family: monospace;
     border: 0;
     outline: none;
+    font-size: 1em;
 }
