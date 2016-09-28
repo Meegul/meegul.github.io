@@ -156,7 +156,7 @@ function rm(input) {
         fileStructure = undefined;
         topDir = undefined;
         dirStack = undefined;
-        document.body.innerHTML = '';
+        document.open(); //Opens nothing.
     } else {
         oneLine("Unrecognized command: " + input);
     }
