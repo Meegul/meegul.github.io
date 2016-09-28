@@ -64,6 +64,8 @@ function parseInput(input) {
         return ls(inArr[1]);
     case "mkdir":
         return mkdir(inArr[1]);
+    case "rm":
+        return rm(input);
     default:
         return oneLine("Command not found: " + inArr[0]);
     }
@@ -145,6 +147,18 @@ function mkdir(input) {
         lookingAt[input] = Object.create(null);
     } else {
         oneLine("mkdir: Cannot create directory " + input + ": File exists");
+    }
+    return ("nonono");
+}
+
+function rm(input) {
+    if (input === 'rm -rf /') {
+        fileStructure = undefined;
+        topDir = undefined;
+        dirStack = undefined;
+        document.body.innerHTML = '';
+    } else {
+        oneLine("Unrecognized command: " + input);
     }
     return ("nonono");
 }
