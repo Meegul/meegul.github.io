@@ -1,3 +1,25 @@
+/*MIT License
+
+Copyright (c) 2017 Michael Bilstein (https://github.com/Meegul)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.*/
+
 class Particle {
   constructor(x = 0, y = 0, dx = 0, dy = 0, mass = 1, color = "#FFFFFF", density = 1, terminalVelocity = 100000) {
     this.x = x;
@@ -30,24 +52,31 @@ class Particle {
 }
 
 class Particles {
-  //The constructor. Must received an object with parameters.
+  //The constructor. Must receive an object with parameters.
   //A canvas object must be supplied either in the object or as a second parameter.
   constructor(paramsObject, domObject) {
     //Make sure we got a domObject
     if (!paramsObject.domObject)
       paramsObject.domObject = domObject;
     if (!paramsObject.domObject) {
-      console.log("Missing domObject");
-      return;
+      throw new Error("Missing dom object");
     }
-    this.domObject = paramsObject.domObject;
-    this.debug = paramsObject.debug || false;
-    this.frameTime = paramsObject.frameTime || false;
-    this.interactive = paramsObject.interactive || false;
-    this.gravity = paramsObject.gravity || false;
-    this.falling = paramsObject.falling || false;
-    this.walled = paramsObject.walled || false;
-    this.teleportWalls = paramsObject.teleportWalls || false;
+    this.domObject = paramsObject.domObject; //The canvas
+    this.debug = paramsObject.debug || false; //Debug mode
+    this.frameTime = paramsObject.frameTime || false; //Frame-time overlay
+    this.interactive = paramsObject.interactive || false; //Whether to track mouse interactions
+    this.repel = paramsObject.repel || false; //Whether to have the mouse repel particles
+    if (this.repel && !this.interactive) {
+      console.log("You specified to have particles replled by the mouse without interactivity");
+    }
+    this.clickToAdd = paramsObject.clickToAdd || false;
+    if (this.clickToAdd && !this.interactive) {
+      console.log("You specified to be able to click to add particles, but without interactivity enabled");
+    }
+    this.gravity = paramsObject.gravity || false; //Whether particles attract one another
+    this.falling = paramsObject.falling || false; //Whether particles should fall downards
+    this.walled = paramsObject.walled || false; //Whether there are walls
+    this.teleportWalls = paramsObject.teleportWalls || false; //Whether walls teleport particles to the opposite side
     if (this.teleportWalls && !this.walled) {
       console.log("You specified to have teleportWalls but without walls; therefore, particles will never teleport");
     }
@@ -102,6 +131,10 @@ class Particles {
         particle.applyForce(0, 1, particle.mass);
       }
     }
+    //Repel, if necessary
+    if (this.interactive && this.repel) {
+      this.repelParticles();
+    }
     //Make the moves
     this.particles.forEach((on) => on.move());
     //Bounce off walls
@@ -142,6 +175,21 @@ class Particles {
             particle.y = this.domObject.height - radius;
             particle.dy = -particle.dy;
           }
+        }
+      }
+    }
+  }
+  repelParticles() {
+    if (this.interactive && this.repel) {
+      let particle, distance, force, unitX, unitY;
+      for (var index = 0; index < this.particles.length; index++) {
+        particle = this.particles[index];
+        distance = distanceBetween(particle, this.mousePos);
+        if (distance < 250) {
+          unitX = (particle.x - this.mousePos.x) / distance;
+          unitY = (particle.y - this.mousePos.y) / distance;
+          force = 100 / distance;
+          particle.applyForce(unitX, unitY, force);
         }
       }
     }
@@ -188,7 +236,7 @@ class Particles {
       }
     }
     //Show the particle being created, and the force applied to it
-    if (this.interactive && this.clicked) {
+    if (this.interactive && this.clicked && this.clickToAdd) {
       brush.strokeStyle = "white";
       brush.lineWidth = 5 * window.devicePixelRatio;
       brush.beginPath();
@@ -225,6 +273,7 @@ class Particles {
         brush.fillStyle = "white";
         brush.fillText(`Physics:${physicsEnd - physicsStart}ms`, 0, 20);
         brush.fillText(`Render:${renderEnd - physicsEnd}ms`, 0, 20 + 11 * window.devicePixelRatio);
+        brush.fillText(`Particles:${this.particles.length}`, 0, 20 + 11 * 2 * window.devicePixelRatio);
       }
       requestAnimationFrame(this.run.bind(this));
     }
@@ -281,11 +330,13 @@ class Particles {
   handleMouseUp() {
     if (this.interactive) {
       this.clicked = false;
-      const mass = (new Date().getTime() - this.timeClicked) / 500;
-      const dx = (this.mousePos.x - this.clickPos.x) / 500;
-      const dy = (this.mousePos.y - this.clickPos.y) / 500;
-      const newParticle = new Particle(this.clickPos.x, this.clickPos.y, dx, dy, mass, this.particleColor, 1, this.terminalVelocity);
-      this.particles.push(newParticle);
+      if (this.clickToAdd) {
+        const mass = (new Date().getTime() - this.timeClicked) / 500;
+        const dx = (this.mousePos.x - this.clickPos.x) / 500;
+        const dy = (this.mousePos.y - this.clickPos.y) / 500;
+        const newParticle = new Particle(this.clickPos.x, this.clickPos.y, dx, dy, mass, this.particleColor, 1, this.terminalVelocity);
+        this.particles.push(newParticle);
+      }
     }
   }
   //Keep track of the mouse location on the canvas
@@ -364,6 +415,8 @@ class Particles {
         gravity: true,
         falling: false,
         teleportWalls: false,
+        interactive: true,
+        clickToAdd: true,
         backgroundColor: "rgb(0,0,0)",
         terminalVelocity: 10000,
         particles: [
@@ -376,15 +429,19 @@ class Particles {
         gravity: false,
         falling: false,
         teleportWalls: true,
+        interactive: true,
+        repel: true,
+        clickToAdd: false,
         backgroundColor: "rgba(0,0,0,0)",
         particleColor: "rgb(255,255,255)",
         connected: true,
+        terminalVelocity: 3,
         random: {
           number: 50,
           minMass: 1,
           maxMass: 1,
         },
-      }
+      },
     };
   }
 }
