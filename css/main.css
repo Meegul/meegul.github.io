@@ -103,3 +103,14 @@ a {
     flex-basis: 0;
     flex-grow: 1;
 }
+
+#particle-canvas {
+    margin: 0;
+    padding: 0;
+    z-index: -2;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

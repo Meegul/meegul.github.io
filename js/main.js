@@ -7,6 +7,13 @@ function updateMask() {
 };
 
 window.onload = () => {
+    const month = new Date().getMonth();
+    const canvas = document.getElementById("particle-canvas");
+    if (month >= 11 || month <= 2) {
+        new Particles(Particles.configs().snow, canvas).start();
+    } else {
+        new Particles(Particles.configs().lattice, canvas).start();
+    }
     updateMask();
     setInterval(updateMask, 10000);
 };
