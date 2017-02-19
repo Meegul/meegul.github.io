@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo 'Putting .bashrc into ~'
+cp ./.bashrc ~/.bashrc
+echo 'Putting .vimrc into ~'
+cp ./.vimrc ~/.vimrc
