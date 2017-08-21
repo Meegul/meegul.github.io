@@ -71,6 +71,7 @@ a {
 .link-text {
     transition: all .2s ease-in-out;
     color: #555;
+    margin: 0;
 }
 
 .link-text:hover {
