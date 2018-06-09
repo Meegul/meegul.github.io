@@ -1,10 +1,6 @@
 body {
-    font-family: 'Montserrat';
-    background: url('../img/bg.jpg') no-repeat fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+    color: #333;
+    background-color: black;
 }
 
 * {
@@ -12,21 +8,29 @@ body {
 }
 
 h1 {
-    font-size: 4.5em;
+    font-family: 'Montserrat';
+    font-size: 3rem;
     font-weight: 600;
 }
 
 h2 {
-    font-size: 2em;
+    font-family: 'Montserrat';
+    font-size: 2rem;
     font-weight: 200;
 }
 
+h3, h4, h5, a {
+    font-family: 'Montserrat';
+}
+
 p {
-    max-width: 50em;
+    max-width: 50rem;
+    font-family: 'Open Sans', sans-serif;
 }
 
 a {
     text-decoration: none;
+    padding: 0 0.25rem;
 }
 
 .background-mask {
@@ -61,7 +65,7 @@ a {
 }
 
 .card {
-    background-color: rgba(255, 255, 255, 0.80);
+    background-color: rgba(200, 200, 200, 0.90);
     border-radius: 3px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     margin: 12px;
@@ -72,6 +76,7 @@ a {
     transition: all .2s ease-in-out;
     color: #555;
     margin: 0;
+    font-style: italic;
 }
 
 .link-text:hover {
@@ -121,4 +126,37 @@ a {
     height: 25%;
     border-radius: 50%;
     
+}
+
+.content-toggle {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background-color: rgba(200, 200, 200, 0.90);
+    border: none;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+}
+
+.content-toggle:focus {
+    outline: none;
+}
+
+hr {
+    height: 1px;
+    background-color: #888;
+    border: none;
+    margin: 1rem 0;
+}
+
+.split-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.container {
+    width: 95vw; 
 }

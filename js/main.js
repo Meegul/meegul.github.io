@@ -1,19 +1,35 @@
-function updateMask() {
-    const backgroundMask = document.getElementById("backgroundMask");
-    const time = new Date().getHours();
-    const opacity = Math.abs(12 - time) * 0.07;
-    backgroundMask.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
-    console.log(`New opacity: ${opacity}`);
+window.onload = () => {
+    const canvas = document.getElementById("particle-canvas");
+    new Particles({
+        walled: false,
+        gravity: true,
+        falling: false, 
+        telportWalls: true,
+        interactive: false,
+        repel: false,
+        particleColor: "rgb(255,255,255)",
+        backgroundColor: "rgba(15,15,15,100)",
+        connected: false,
+        random: {
+            number: 250,
+            minMass: 0.15,
+            maxMass: 0.3,
+            minDx: -0.3,
+            maxDx: 0.3,
+            minDy: -0.3,
+            maxDy: 0.3,
+        },
+    }, canvas).start();
 };
 
-window.onload = () => {
-    const month = new Date().getMonth();
-    const canvas = document.getElementById("particle-canvas");
-    if (month >= 11 || month <= 2) {
-        new Particles(Particles.configs().snow, canvas).start();
+const toggleContent = () => {
+    const contentEl = document.getElementById("content");
+    const buttonEl = document.getElementById("contentToggle");
+    if (contentEl.style.display) {
+        contentEl.style.display = "";
+        buttonEl.innerHTML = "Hide everything";
     } else {
-        new Particles(Particles.configs().lattice, canvas).start();
+        contentEl.style.display = "none";
+        buttonEl.innerHTML = "Show everything";
     }
-    updateMask();
-    setInterval(updateMask, 10000);
 };

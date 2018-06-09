@@ -12,100 +12,111 @@
 		<link href="css/main.css" rel="stylesheet">
 	</head>
     <body>
-	    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+        <link href="https://fonts.googleapis.com/css?family=Montserrat|Open+Sans:300" rel="stylesheet">
         <div id="backgroundMask" class="background-mask"></div>
         <canvas id="particle-canvas">No canvas for you!</canvas>
-        <div class="title">
-            <div class="card center-text">
-                <h1>Michael Bilstein</h1>
-                <h2>Software Engineer</h2>
-                <img src="img/more_jpeg.jpeg" class="portrait">
-                <div>
-                    <a href="#about-me" class="link-text">About me</a>
-                    <a href="#links" class="link-text">Links</a>
-                    <a href="#projects" class="link-text">Projects</a>
-                    <a href="#skills" class="link-text">Skills</a>
-                </div>
-            </div>
-        </div>
-        <div id="about-me" class="content">
-            <div class="card left-text">
-                <h2 class="center-text">About me</h2>
-                <p>
-                    I'm full-stack developer who's currently a student at Purdue University studying Computer Science. I'm passionate about sustainability, minimalism, and technology. I'll be interning with <a href="https://platform9.com" class="link-text"> Platform9</a> in the Summer of 2018.
-                </p>
-                <p>
-                    In 2017, I interned at <a href="http://claritypartners.com" class="link-text">Clarity Partners</a>, where I worked on software for the Chicago Police Department using C# and .Net.
-                </p>
-                <p>
-                    In 2016, I interned at McKesson, where I developed software in Ruby used to validate gigabytes of incoming hospital data daily.
-                </p>
-            </div>
-        </div>
-        <div id="links" class="content">
-            <div class="card left-text">
-                <h2 class="center-text">Online Presence</h2>
-                <p class="center-text">You can find/contact me online here:</p>
-                <div class="logos">
-                    <a href="https://Github.com/Meegul">
-                        <img class="logo" src="img/github.svg">
-                    </a>
-                    <a href="https://www.linkedin.com/in/michael-bilstein-3bb7b5114">
-                        <img class="logo" src="img/linkedin.svg">
-                    </a>
-                    <a href="mailto:micha3lbilstein@gmail.com">
-                        <img class="logo" src="img/email.svg">
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div id="projects" class="content">
-            <div class="card center-text">
-                <h2 class="center-text">Projects</h2>
-                <div>
-                    <h3><a class="link-text" href="http://isblankup.com">Isblankup</a></h3>
-                    <p class="left-text">A simple and elegant website to check the up-status of other websites. Optimized for fast loadtimes and low bandwidth. It will also cache results to help with high-traffic scenarios. I'm currently working on improving the functionality of the site, along with adding some additional features such as exploring the history of websites' statuses.</p>
-                </div>
-                <div>
-                    <h3><a class="link-text" href="http://michaelbilstein.com/jslisp/">jslisp</a></h3>
-                    <p class="left-text">A simple lisp dialect written entirely in JavaScript. I wrote all of its components from scratch: An interpreter consisting of my own lexer and parser, as well as a REPL. It's not intended to be incredibly complex/useful; it's original purpose was to show off JavaScript's ability to elegantly implement the components needed for an interpreter.</p>
-                </div>
-                <div>
-                    <h3><a class="link-text" href="http://michaelbilstein.com/better-particles/">better-particles</a></h3>
-                    <p class="left-text">A better particle library for the web. It's lightweight, doesn't have any dependencies, supports advanced physics calculations, and all at 60fps for even hundreds of particles. You can see it in action in the background of this website.</p>
-                </div>
-                <div>
-                    <h3><a class="link-text" href="https://www.kevindong.net/QuackCryption/">QuackCryption</a></h3>
-                    <p class="left-text">Inspired by <a style="margin: 0" class="link-text" href="https://en.wikipedia.org/wiki/Rubber_duck_debugging">Rubber Duck Debugging</a>, QuackCryption is a fully functional novel encryption method that was implemented in one weekend on 4 platforms (Desktop GUI, CLI, Website, Android). Quackcryption recognizes files encoded in the .quack format, which includes metadata about the original file, along with all of it's original data. The data is first encrypted with AES, then uses a bit-cipher to convert each bit into quacks.</p>
-                </div>
-                <div>
-                    <h3><a class="link-text" href="https://twoduck.github.io/nix.js/">Nix.js</a></h3>
-                    <p class="left-text">Nix.js is a simple virtual operating system that runs in your browser. Right now, it has a working package manager, basic I/O, and a filesystem. I haven't continued working on it for some time, mostly due to it needing some additional design work. Some critical design decisions for how software should work on Nix.js still need to be made, and contributions/forks are welcome.</p>
-                </div>
-            </div>
-        </div>
-        <div id="skills" class="content">
-            <div class="card center-text">
-                <h2 class="center-text">Skills</h2>
-                <div class="split">
-                    <div class="skill">
-                        <h3>Best</h3>
-                        <p>JavaScript (ECMAScript 2015+)</p>
-                        <p>Node.js</p>
-                        <p>.Net/C#</p>
+        <button id="contentToggle" class="content-toggle" onclick="toggleContent()">Hide everything</button>
+        <div id="content" class="container">
+            <div class="title">
+                <div class="card center-text">
+                    <h1>Michael Bilstein</h1>
+                    <h2>Software Engineer</h2>
+                    <img src="img/more_jpeg.jpeg" class="portrait">
+                    <div>
+                        <a href="#about-me" class="link-text">About me</a>
+                        <a href="#links" class="link-text">Links</a>
+                        <a href="#projects" class="link-text">Projects</a>
+                        <a href="#skills" class="link-text">Skills</a>
                     </div>
-                    <div class="skill">
-                        <h3>Better</h3>
-                        <p>Java</p>
-                        <p>Ruby</p>
-                        <p>SQL</p>
-                        <p>Go</p>
+                </div>
+            </div>
+            <div id="about-me" class="content">
+                <div class="card left-text">
+                    <h2 class="center-text">About me</h2>
+                    <p>
+                        I'm Software Engineer who's currently a student at Purdue University studying Computer Science, graduating in December of 2018. I focus on developing systems that scale. I'm passionate about Free and Open Source Software, sustainability, and minimalism.
+                    </p>
+                    <hr>
+                    <p>
+                        I'm currently interning at <a href="https://platform9.com" class="link-text"> Platform9</a>, where I'm adding contributing to the <a href="https://github.com/kubernetes-sigs/cluster-api" class="link-text">Kubernetes Cluster API</a> by adding suport for Microsoft's cloud platform, Azure.
+                    </p>
+                    <hr>
+                    <p>
+                        In 2017, I interned at <a href="http://claritypartners.com" class="link-text">Clarity Partners</a>, where I used using C# and .Net to develop software to help the Chicago Police Department.
+                    </p>
+                    <hr>
+                    <p>
+                        In 2016, I interned at McKesson, where I developed software in Ruby used to validate gigabytes of incoming hospital data daily.
+                    </p>
+                </div>
+            </div>
+            <div id="projects" class="content">
+                <div class="card center-text">
+                    <h2 class="center-text">Projects</h2>
+                    <div>
+                        <h3><a class="link-text" href="http://isblankup.com">Isblankup</a></h3>
+                        <p class="left-text">A simple and elegant website to check the up-status of other websites. Optimized for fast loadtimes and low bandwidth. It will also cache results to help with high-traffic scenarios. I'm currently working on improving the functionality of the site, along with adding some additional features such as exploring the history of websites' statuses.</p>
                     </div>
-                    <div class="skill">
-                        <h3>Good</h3>
-                        <p>C</p>
-                        <p>C++</p>
-                        <p>Python</p>
+                    <hr>
+                    <div>
+                        <h3><a class="link-text" href="http://michaelbilstein.com/better-particles/">better-particles</a></h3>
+                        <p class="left-text">A better particle library for the web. It's lightweight and doesn't have any dependencies which helps it run at 60fps on weak devices, even with hundreds of particles. You can see it in the background, where it's running an n-body gravity simulation of 250 particles.</p>
+                    </div>
+                    <hr>
+                    <div>
+                        <h3><a class="link-text" href="http://michaelbilstein.com/jslisp/">jslisp</a></h3>
+                        <p class="left-text">A simple lisp dialect written entirely in JavaScript. I wrote all of its components from scratch: An interpreter consisting of my own lexer and parser, as well as a REPL. It's not intended to be incredibly complex/useful; it's original purpose was to show off JavaScript's ability to elegantly implement the components needed for an interpreter.</p>
+                    </div>
+                    <hr>
+                    <div>
+                        <h3><a class="link-text" href="https://www.kevindong.net/QuackCryption/">QuackCryption</a></h3>
+                        <p class="left-text">Inspired by <a style="margin: 0" class="link-text" href="https://en.wikipedia.org/wiki/Rubber_duck_debugging">Rubber Duck Debugging</a>, QuackCryption is a fully functional novel encryption method that was implemented in one weekend on 4 platforms (Desktop GUI, CLI, Website, Android). Quackcryption recognizes files encoded in the .quack format, which includes metadata about the original file, along with all of it's original data. The data is first encrypted with AES, then uses a bit-cipher to convert each bit into quacks.</p>
+                    </div>
+                    <hr>
+                    <div>
+                        <h3><a class="link-text" href="https://twoduck.github.io/nix.js/">Nix.js</a></h3>
+                        <p class="left-text">Nix.js is a simple virtual operating system that runs in your browser. Right now, it has a working package manager, basic I/O, and a filesystem. I haven't continued working on it for some time, mostly due to it needing some additional design work. Some critical design decisions for how software should work on Nix.js still need to be made, and contributions/forks are welcome.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="split-content">
+                <div id="links" class="content">
+                    <div class="card left-text">
+                        <h2 class="center-text">Online Presence</h2>
+                        <p class="center-text">You can find/contact me online here:</p>
+                        <div class="logos">
+                            <a href="https://Github.com/Meegul">
+                                <img class="logo" src="img/github.svg">
+                            </a>
+                            <a href="https://www.linkedin.com/in/michael-bilstein-3bb7b5114">
+                                <img class="logo" src="img/linkedin.svg">
+                            </a>
+                            <a href="mailto:micha3lbilstein@gmail.com">
+                                <img class="logo" src="img/email.svg">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div id="skills" class="content">
+                    <div class="card center-text">
+                        <h2 class="center-text">Languages</h2>
+                        <div class="split">
+                            <div class="skill">
+                                <h3>Best</h3>
+                                <p>JS</p>
+                                <p>Go</p>
+                            </div>
+                            <div class="skill">
+                                <h3>Better</h3>
+                                <p>Java</p>
+                                <p>.Net/C#</p>
+                            </div>
+                            <div class="skill">
+                                <h3>Good</h3>
+                                <p>C</p>
+                                <p>Python</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
