@@ -24,12 +24,15 @@ window.onload = () => {
 
 const toggleContent = () => {
     const contentEl = document.getElementById("content");
+    const maskEl = document.getElementById("backgroundMask");
     const buttonEl = document.getElementById("contentToggle");
     if (contentEl.style.display) {
         contentEl.style.display = "";
+        maskEl.className = "background-mask";
         buttonEl.innerHTML = "Hide everything";
     } else {
         contentEl.style.display = "none";
+        maskEl.className = "";
         buttonEl.innerHTML = "Show everything";
     }
 };

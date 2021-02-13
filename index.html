@@ -15,115 +15,82 @@
         <div id="backgroundMask" class="background-mask"></div>
         <canvas id="particle-canvas">No canvas for you!</canvas>
         <button id="contentToggle" class="content-toggle" onclick="toggleContent()">Hide everything</button>
-        <div id="content" class="container">
-            <div class="title">
-                <div class="card center-text">
-                    <h1>Michael Bilstein</h1>
-                    <h2>Software Engineer</h2>
-                    <img src="img/more_jpeg.jpeg" class="portrait">
-                    <div>
-                        <a href="#about-me" class="link-text">About me</a>
-                        <a href="#links" class="link-text">Links</a>
-                        <a href="#projects" class="link-text">Projects</a>
-                        <a href="#skills" class="link-text">Skills</a>
-                    </div>
+            <div id="content">
+            <header class="title">
+                <h3>Michael Bilstein</h3>
+                <div class="logos">
+                    <a href="https://Github.com/Meegul">
+                        <img class="logo" src="img/github.svg">
+                    </a>
+                    <a href="https://www.linkedin.com/in/michael-bilstein-3bb7b5114">
+                        <img class="logo" src="img/linkedin.svg">
+                    </a>
+                    <a href="mailto:micha3lbilstein@gmail.com">
+                        <img class="logo" src="img/email.svg">
+                    </a>
                 </div>
-            </div>
-            <div id="about-me" class="content">
-                <div class="card left-text">
-                    <h2 class="center-text">About me</h2>
-                    <p>
-                        I'm a Software Engineer currently working at <a href="http://claritypartners.com" class="link-text">Clarity Partners</a> again, where I'm now leading the development of a new incident reporting system using React/Redux and .Net Core.
-                    </p>
-                    <hr>
-                    <p>
-                        In 2018, I interned at <a href="https://platform9.com" class="link-text"> Platform9</a>, where I contributed to the <a href="https://github.com/kubernetes-sigs/cluster-api" class="link-text">Kubernetes Cluster API</a> by adding support for Microsoft's cloud platform, Azure.
-                    </p>
-                    <hr>
-                    <p>
-                        In 2017, I interned at <a href="http://claritypartners.com" class="link-text">Clarity Partners</a>, where I used using C# and .Net to develop software to help the Chicago Police Department.
-                    </p>
-                    <hr>
-                    <p>
-                        In 2016, I interned at McKesson, where I developed software in Ruby used to validate gigabytes of incoming hospital data daily.
-                    </p>
+            </header>
+            <div class="spacer">&nbsp;</div>
+            <section class="left-text">
+                <h2>About me</h2>
+                <p>
+                    In 2021, Vigtory was acquired by <a href="https://fubo.tv">fuboTV</a>, which led me to being the Director of Engineering for fubo Gaming. 
+                </p>
+                <hr>
+                <p>
+                    In early 2020, I joined <a href="https://betvigtory.com">Vigtory</a>, with the goal of launching America's first <a href="https://www.gamblingsites.org/sports-betting/reduced-juice/">reduced juice</a> sportsbook.
+                </p>
+                <hr>
+                <p>
+                    From 2019 to early 2020, I was at <a href="http://claritypartners.com" class="link-text">Clarity Partners</a>, where I led the development of a new incident reporting system for Chicago Police Department.
+                </p>
+                <hr>
+                <p>
+                    In 2018, I interned at <a href="https://platform9.com" class="link-text"> Platform9</a>, where I contributed to the <a href="https://github.com/kubernetes-sigs/cluster-api" class="link-text">Kubernetes Cluster API</a> by adding support for Microsoft's cloud platform, Azure.
+                </p>
+                <hr>
+                <p>
+                    In 2017, I interned at <a href="http://claritypartners.com" class="link-text">Clarity Partners</a>, where I used using C# and .Net to develop software to help the Chicago Police Department.
+                </p>
+                <hr>
+                <p>
+                    In 2016, I interned at McKesson, where I developed software in Ruby used to validate gigabytes of incoming hospital data daily.
+                </p>
+            </section>
+            <section id="projects">
+                <h2>Fun</h2>
+                <div>
+                    <h3><a class="link-text" href="https://github.com/platform9/azure-provider">k8s Cluster-API Azure Provider</a></h3>
+                    <p class="left-text">I started the Azure cloud provider for the Kubernetes Cluster API, which is a project of the Kubernetes Cluster Lifecycle Special Interetest Group on behalf of the excellent folks over at <a href="https://platform9.com/">Platform9</a>.</p>
                 </div>
-            </div>
-            <div id="projects" class="content">
-                <div class="card center-text">
-                    <h2 class="center-text">Projects</h2>
-		    <div>
-			<h3><a class="link-text" href="https://github.com/platform9/azure-provider">k8s Cluster-API Azure Provider</a></h3>
-			<p class="left-text">The Azure cloud provider for the upcoming Kubernetes Cluster API, which is a project of the Kubernetes Cluster Lifecycle Special Interetest Group. I'm working on this project on behalf of Platform9 in Sunnyvale, CA, where I'm currently interning for the summer.</p>
-		    </div>
-		    <hr>
-                    <div>
-                        <h3><a class="link-text" href="https://lateplateme.com">Lateplateme</a></h3>
-                        <p class="left-text">SaaS that simplifies how fraternities and sororities get late plates. With Lateplateme, members of greek life can request late plates directly from their chef. Chefs can easily manage and publish their menus, and make sure that they never miss someone's food.</p>
-                    </div>
-                    <hr>
-                    <div>
-                        <h3><a class="link-text" href="http://isblankup.com">Isblankup</a></h3>
-                        <p class="left-text">A simple and elegant website to check the up-status of other websites. Optimized for fast loadtimes and low bandwidth. It will also cache results to help with high-traffic scenarios. I'm currently working on improving the functionality of the site, along with adding some additional features such as exploring the history of websites' statuses.</p>
-                    </div>
-                    <hr>
-                    <div>
-                        <h3><a class="link-text" href="http://michaelbilstein.com/better-particles/">better-particles</a></h3>
-                        <p class="left-text">A better particle library for the web. It's lightweight and doesn't have any dependencies which helps it run at 60fps on weak devices, even with hundreds of particles. You can see it in the background, where it's running an n-body gravity simulation of 250 particles.</p>
-                    </div>
-                    <hr>
-                    <div>
-                        <h3><a class="link-text" href="http://michaelbilstein.com/jslisp/">jslisp</a></h3>
-                        <p class="left-text">A simple lisp dialect written entirely in JavaScript. I wrote all of its components from scratch: An interpreter consisting of my own lexer and parser, as well as a REPL. It's not intended to be incredibly complex/useful; it's original purpose was to show off JavaScript's ability to elegantly implement the components needed for an interpreter.</p>
-                    </div>
-                    <hr>
-                    <div>
-                        <h3><a class="link-text" href="https://twoduck.github.io/nix.js/">Nix.js</a></h3>
-                        <p class="left-text">Nix.js is a simple virtual operating system that runs in your browser. Right now, it has a working package manager, basic I/O, and a filesystem. I haven't continued working on it for some time, mostly due to it needing some additional design work. Some critical design decisions for how software should work on Nix.js still need to be made, and contributions/forks are welcome.</p>
-                    </div>
+                <hr>
+                <div>
+                    <h3><a class="link-text" href="https://lateplateme.com">Lateplateme</a></h3>
+                    <p class="left-text">SaaS that simplifies how fraternities and sororities get late plates.</p>
                 </div>
-            </div>
-            <div class="split-content">
-                <div id="links" class="content">
-                    <div class="card left-text">
-                        <h2 class="center-text">Online Presence</h2>
-                        <p class="center-text">You can find/contact me online here:</p>
-                        <div class="logos">
-                            <a href="https://Github.com/Meegul">
-                                <img class="logo" src="img/github.svg">
-                            </a>
-                            <a href="https://www.linkedin.com/in/michael-bilstein-3bb7b5114">
-                                <img class="logo" src="img/linkedin.svg">
-                            </a>
-                            <a href="mailto:micha3lbilstein@gmail.com">
-                                <img class="logo" src="img/email.svg">
-                            </a>
-                        </div>
-                    </div>
+                <hr>
+                <div>
+                    <h3><a class="link-text" href="http://isblankup.com">Isblankup</a></h3>
+                    <p class="left-text">A simple and elegant website to check the up-status of other websites. Optimized for fast loadtimes and low bandwidth.</p>
                 </div>
-                <div id="skills" class="content">
-                    <div class="card center-text">
-                        <h2 class="center-text">Languages</h2>
-                        <div class="split">
-                            <div class="skill">
-                                <h3>Best</h3>
-                                <p>JS</p>
-                                <p>Go</p>
-				<p>.Net/C#</P
-                            </div>
-                            <div class="skill">
-                                <h3>Better</h3>
-                                <p>Java</p>
-                                <p>Python</p>
-                            </div>
-                            <div class="skill">
-                                <h3>Good</h3>
-                                <p>C</p>
-				<p>Ruby</p>
-                            </div>
-                        </div>
-                    </div>
+                <hr>
+                <div>
+                    <h3><a class="link-text" href="http://michaelbilstein.com/better-particles/">better-particles</a></h3>
+                    <p class="left-text">A lighter weight particle library for the web. You can see it in the background, where it's running an n-body gravity simulation of 250 particles at 60fps. Even assuming you're on a pi.</p>
                 </div>
+                <hr>
+                <div>
+                    <h3><a class="link-text" href="http://michaelbilstein.com/jslisp/">jslisp</a></h3>
+                    <p class="left-text">A simple lisp dialect.</p>
+                </div>
+                <hr>
+                <div>
+                    <h3><a class="link-text" href="https://twoduck.github.io/nix.js/">Nix.js</a></h3>
+                    <p class="left-text">Nix.js is a simple virtual operating system that runs in your browser. Nix.js has a package manager, basic I/O, and a filesystem. Forks for fun, not evil, are welcome.</p>
+                </div>
+            </section>
+            <footer class="split-content">
+                </footer>
             </div>
         </div>
         <script src="js/better-particles.min.js"></script>

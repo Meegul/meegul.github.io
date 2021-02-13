@@ -1,10 +1,20 @@
 body {
-    color: #333;
-    background-color: black;
+    color: #fff;
 }
 
-* {
-    margin: 5px;
+.container {
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 2.6rem;
+}
+
+header > h3 {
+    margin: 0 1.3rem;
 }
 
 h1 {
@@ -30,7 +40,6 @@ p {
 
 a {
     text-decoration: none;
-    padding: 0 0.25rem;
 }
 
 .background-mask {
@@ -42,12 +51,8 @@ a {
     z-index: -1;
     padding: 0;
     margin: 0;
-}
-
-.title {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: "rgba(0,0,0,0.3)";
+    backdrop-filter: blur(3px);
 }
 
 .content {
@@ -56,58 +61,41 @@ a {
     align-items: center;
 }
 
-.center-text {
-    text-align: center;
-}
-
 .left-text {
     text-align: left;
 }
 
-.card {
-    background-color: rgba(200, 200, 200, 0.90);
-    border-radius: 3px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+section {
     margin: 12px;
     padding: 14px;
+    max-width: 30rem;
 }
 
-.link-text {
+.spacer {
+    height: 80vh;
+}
+
+a {
     transition: all .2s ease-in-out;
-    color: #555;
     margin: 0;
+    color: #FA4616;
     font-style: italic;
-}
-
-.link-text:hover {
-    color: #EF4836;
 }
 
 .logos {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 .logo {
-    height: 3em;
+    height: 1.3rem;
+    margin: 0 0.5rem;
     transition: all .2s ease-in-out;
 }
 
 .logo:hover {
     transform: translateY(-5px);
-}
-
-.split {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    align-items: flex-start;
-}
-
-.skill {
-    flex-basis: 0;
-    flex-grow: 1;
 }
 
 #particle-canvas {
@@ -119,13 +107,6 @@ a {
     left: 0;
     width: 100%;
     height: 100%;
-}
-
-.portrait {
-    width: 25%;
-    height: 25%;
-    border-radius: 50%;
-    
 }
 
 .content-toggle {
@@ -148,15 +129,4 @@ hr {
     background-color: #888;
     border: none;
     margin: 1rem 0;
-}
-
-.split-content {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.container {
-    width: 95vw; 
 }
