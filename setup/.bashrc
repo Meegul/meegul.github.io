@@ -120,4 +120,3 @@ fi
 alias upd='sudo apt update && sudo apt upgrade -y && sudo apt autoremove'
 alias install='sudo apt install'
 alias purge='sudo apt purge'
-alias cs='ssh mbilstei@data.cs.purdue.edu'
