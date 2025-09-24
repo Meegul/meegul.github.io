@@ -1,40 +1,37 @@
+@font-face {
+    font-family: 'Source Code Pro';
+    src: url('../fonts/SourceCodePro-VariableFont_wght.ttf') format('truetype');
+    font-weight: 200 900;
+    font-style: normal;
+    font-display: swap;
+}
+
 body {
-    color: #fff;
+    margin: 0;
 }
 
 html {
     background-color: #0f0f0f;
+    font-family: 'Source Code Pro', monospace;
+    color: #dfdfdf;
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    height: 2.6rem;
+h1, h2 {
+    max-width: 20rem;
+    text-align: center;
 }
 
-header > h3 {
-    margin: 0 1.3rem;
+h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0.5rem;
 }
+
 
 h2 {
-    font-family: 'Montserrat';
-    font-size: 2rem;
-    font-weight: 200;
-}
-
-h3, h4, h5, a {
-    font-family: 'Montserrat';
-}
-
-p {
-    max-width: 50rem;
-    font-family: 'Open Sans', sans-serif;
-}
-
-a {
-    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 400;
+    margin: 0.125rem;
 }
 
 .background-mask {
@@ -46,38 +43,32 @@ a {
     z-index: -1;
     padding: 0;
     margin: 0;
-    background-color: "rgba(0,0,0,0.3)";
-    backdrop-filter: blur(3px);
+    background-color: "rgba(0 0 0 0.1)";
+    backdrop-filter: blur(1.5px);
 }
 
-.content {
+.container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.left-text {
-    text-align: left;
-}
-
-section {
-    margin: 12px;
-    padding: 14px;
-    max-width: 30rem;
-}
-
-.spacer {
-    height: 80vh;
-}
-
-a {
-    transition: all .2s ease-in-out;
-    margin: 0;
-    color: #FA4616;
-    font-style: italic;
+.content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    padding: 5rem;
+    justify-content: center;
+    align-items: center;
 }
 
 .logos {
+    margin-top: 1.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -87,6 +78,7 @@ a {
     height: 1.3rem;
     margin: 0 0.5rem;
     transition: all .2s ease-in-out;
+    color: #cfcfcf;
 }
 
 .logo:hover {
@@ -104,24 +96,24 @@ a {
     height: 100%;
 }
 
-.content-toggle {
-    position: fixed;
-    bottom: 1rem;
-    right: 1rem;
-    background-color: rgba(200, 200, 200, 0.90);
-    border: none;
-    text-decoration: none;
-    border-radius: 0.5rem;
-    padding: 0.5rem;
+#lgcanvas {
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0f0f0f;
 }
 
-.content-toggle:focus {
-    outline: none;
-}
-
-hr {
-    height: 1px;
-    background-color: #888;
-    border: none;
-    margin: 1rem 0;
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    h2 {
+        font-size: 1.25rem;
+    }
+    .logo {
+        height: 1.8rem;
+    }
 }
