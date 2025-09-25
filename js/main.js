@@ -53,11 +53,11 @@ window.onload = () => {
             const float NUM_ONE = 1.0;
             const float NUM_HALF = 0.5;
             const float NUM_TWO = 2.0;
-            const float POWER_EXPONENT = 6.0;
+            const float POWER_EXPONENT = 5.5;
             const float MASK_MULTIPLIER_1 = 10000.0;
             const float MASK_MULTIPLIER_2 = 9500.0;
             const float MASK_MULTIPLIER_3 = 11000.0;
-            const float LENS_MULTIPLIER = 3000.0;
+            const float LENS_MULTIPLIER = 0.3;
             const float MASK_STRENGTH_1 = 8.0;
             const float MASK_STRENGTH_2 = 16.0;
             const float MASK_STRENGTH_3 = 2.0;
@@ -65,38 +65,48 @@ window.onload = () => {
             const float MASK_THRESHOLD_2 = 0.9;
             const float MASK_THRESHOLD_3 = 1.5;
             const float SAMPLE_RANGE = 4.0;
-            const float SAMPLE_OFFSET = 0.5;
+            const float SAMPLE_OFFSET = 0.1;
             const float GRADIENT_RANGE = 0.2;
             const float GRADIENT_OFFSET = 0.01;
             const float GRADIENT_EXTREME = -1000.0;
-            const float LIGHTING_INTENSITY = 0.11;
+            const float LIGHTING_INTENSITY = 0.05;
 
-            vec2 uv = fragCoord / iResolution.xy;
+            vec2 uv = fragCoord / iResolution.xy; // scales pixel coord to 0-1
             vec2 center = iCenter.xy;
-            vec2 boxSize = iSize.xy;
-            vec2 m2 = (uv - center / iResolution.xy);
+            vec2 boxSize = iSize.xy / 2.0;
+            vec2 boxSizeNorm = (iSize.xy / iResolution.xy) / 2.0;
 
-            float roundedBox = pow(abs(m2.x * iResolution.x / iResolution.y), POWER_EXPONENT) + pow(abs(m2.y), POWER_EXPONENT);
-            float rb1 = clamp((NUM_ONE - roundedBox * MASK_MULTIPLIER_1) * MASK_STRENGTH_1, NUM_ZERO, NUM_ONE);
-            float rb2 = clamp((MASK_THRESHOLD_1 - roundedBox * MASK_MULTIPLIER_2) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE) -
-            clamp(pow(MASK_THRESHOLD_2 - roundedBox * MASK_MULTIPLIER_2, NUM_ONE) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE);
-            float rb3 = clamp((MASK_THRESHOLD_3 - roundedBox * MASK_MULTIPLIER_3) * MASK_STRENGTH_3, NUM_ZERO, NUM_ONE) -
-            clamp(pow(NUM_ONE - roundedBox * MASK_MULTIPLIER_3, NUM_ONE) * MASK_STRENGTH_3, NUM_ZERO, NUM_ONE);
+
+            
+            vec2 m2 = (uv - center / iResolution.xy); // offsets uv by the center, resulting in value that can be between -1.0 and 1.0, 0.0 indicates center
+
+            float roundedBox = pow(abs(m2.x) / boxSizeNorm.x, POWER_EXPONENT) + pow(abs(m2.y) / boxSizeNorm.y, POWER_EXPONENT);
+
+            float rb1 = clamp((NUM_ONE - roundedBox) * MASK_STRENGTH_1, NUM_ZERO, NUM_ONE);
+            float rb2 = clamp((MASK_THRESHOLD_1 - roundedBox) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE) -
+                clamp((MASK_THRESHOLD_2 - roundedBox) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE);
+            float rb3 = clamp((MASK_THRESHOLD_3 - roundedBox) * MASK_STRENGTH_3, NUM_ZERO, NUM_ONE) -
+                clamp((NUM_ONE - roundedBox) * MASK_STRENGTH_3, NUM_ZERO, NUM_ONE);
 
             fragColor = vec4(NUM_ZERO);
             float transition = smoothstep(NUM_ZERO, NUM_ONE, rb1 + rb2);
 
             if (transition > NUM_ZERO) {
                 vec2 lens = ((uv - NUM_HALF) * NUM_ONE * (NUM_ONE - roundedBox * LENS_MULTIPLIER) + NUM_HALF);
-                float total = NUM_ZERO;
+
+                float blend = transition; // 0 at edge, 1 deep inside
+                vec4 baseSample = texture2D(iChannel0, uv);
+                vec4 accum = baseSample * (NUM_ONE - blend);
+                float total = (NUM_ONE - blend);
                 for (float x = -SAMPLE_RANGE; x <= SAMPLE_RANGE; x++) {
                     for (float y = -SAMPLE_RANGE; y <= SAMPLE_RANGE; y++) {
                         vec2 offset = vec2(x, y) * SAMPLE_OFFSET / iResolution.xy;
-                        fragColor += texture2D(iChannel0, offset + lens);
-                        total += NUM_ONE;
+                        vec4 s = texture2D(iChannel0, offset + lens);
+                        accum += s * blend;
+                        total += blend;
                     }
                 }
-                fragColor /= total;
+                fragColor = accum / total;
 
                 float gradient = clamp((clamp(m2.y, NUM_ZERO, GRADIENT_RANGE) + GRADIENT_OFFSET) / NUM_TWO, NUM_ZERO, NUM_ONE) +
                     clamp((clamp(-m2.y, GRADIENT_EXTREME, GRADIENT_RANGE) * rb3 + GRADIENT_OFFSET) / NUM_TWO, NUM_ZERO, NUM_ONE);
@@ -164,9 +174,8 @@ window.onload = () => {
     let textDiv = document.getElementById("textContent");
     
     let centerX = textDiv.offsetLeft + textDiv.offsetWidth / 2;
-    let centerY = lgcanvas.height - (textDiv.offsetTop + textDiv.offsetHeight / 2);
+    let centerY = textDiv.offsetTop + textDiv.offsetHeight / 2;
     let center = [centerX, centerY];
-    console.log(center);
 
     let sizeX = textDiv.offsetWidth;
     let sizeY = textDiv.offsetHeight;
