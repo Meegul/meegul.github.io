@@ -20,12 +20,12 @@ window.onload = () => {
         connected: false,
         random: {
             number: 250,
-            minMass: 0.15,
-            maxMass: 0.3,
-            minDx: -0.3,
-            maxDx: 0.3,
-            minDy: -0.3,
-            maxDy: 0.3,
+            minMass: 0.2,
+            maxMass: 0.4,
+            minDx: -0.6,
+            maxDx: 0.6,
+            minDy: -0.6,
+            maxDy: 0.6,
         },
     }, canvas).start();
 
@@ -61,32 +61,39 @@ window.onload = () => {
             const float NUM_ONE = 1.0;
             const float NUM_HALF = 0.5;
             const float NUM_TWO = 2.0;
-            const float POWER_EXPONENT = 9.0;
             const float MASK_MULTIPLIER_1 = 10000.0;
             const float MASK_MULTIPLIER_2 = 9500.0;
             const float MASK_MULTIPLIER_3 = 11000.0;
-            const float LENS_MULTIPLIER = 0.5;
+            const float LENS_MULTIPLIER = 0.65;
             const float MASK_STRENGTH_1 = 8.0;
             const float MASK_STRENGTH_2 = 16.0;
             const float MASK_STRENGTH_3 = 1.0;
             const float MASK_THRESHOLD_1 = 0.95;
             const float MASK_THRESHOLD_2 = 0.9;
             const float MASK_THRESHOLD_3 = 1.5;
-            const float MASK_THRESHOLD_4 = 2.0;
-            const float SAMPLE_RANGE = 4.0;
-            const float SAMPLE_OFFSET = 0.5;
+            const float SAMPLE_RANGE = 3.5;
+            const float SAMPLE_OFFSET = 0.4;
+            const float ABBERATION_OFFSET = 0.05;
             const float GRADIENT_RANGE = 0.2;
-            const float GRADIENT_OFFSET = 0.075;
+            const float GRADIENT_OFFSET = 0.05;
             const float GRADIENT_EXTREME = -1000.0;
-            const float LIGHTING_INTENSITY = 0.2;
+            const float LIGHTING_INTENSITY = 0.1;
 
-            vec2 uv = fragCoord / iResolution.xy; // scales pixel coord to 0-1
-            vec2 center = iCenter.xy;
-            vec2 boxSize = iSize.xy / 2.0;
-            vec2 boxSizeNorm = (iSize.xy / iResolution.xy) / 2.0;
-            vec2 m2 = (uv - center / iResolution.xy); // offsets uv by the center, resulting in value that can be between -1.0 and 1.0, 0.0 indicates center
+            vec2 invRes = NUM_ONE / iResolution.xy;
+            vec2 uv = fragCoord * invRes; // scales pixel coord to 0-1
+            vec2 center = iCenter.xy * invRes;
+            vec2 boxSize = iSize.xy / NUM_TWO;
+            vec2 boxSizeNorm = (iSize.xy * invRes) / NUM_TWO;
+            vec2 m2 = (uv - center); // offsets uv by the center, value in [-1,1], 0 indicates center
 
-            float roundedBox = pow(abs(m2.x) / boxSizeNorm.x, POWER_EXPONENT) + pow(abs(m2.y) / boxSizeNorm.y, POWER_EXPONENT);
+            // Compute s^8 via multiplications instead of pow(s, 8.0)
+            float sx = abs(m2.x) / boxSizeNorm.x;
+            float sy = abs(m2.y) / boxSizeNorm.y;
+            float sx2 = sx * sx;
+            float sy2 = sy * sy;
+            float sx4 = sx2 * sx2;
+            float sy4 = sy2 * sy2;
+            float roundedBox = sx4 * sx4 + sy4 * sy4;
             float rb1 = clamp((NUM_ONE - roundedBox) * MASK_STRENGTH_1, NUM_ZERO, NUM_ONE);
             float rb2 = clamp((MASK_THRESHOLD_1 - roundedBox) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE) -
                 clamp((MASK_THRESHOLD_2 - roundedBox) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE);
@@ -97,18 +104,23 @@ window.onload = () => {
             float transition = smoothstep(NUM_ZERO, NUM_ONE, rb1 + rb2);
 
             if (transition > NUM_ZERO) {
-                vec2 lens = ((uv - NUM_HALF) * (NUM_ONE - rb3 * LENS_MULTIPLIER) + NUM_HALF);
+                vec2 lens_r = ((uv - NUM_HALF) * (NUM_ONE - roundedBox * (LENS_MULTIPLIER+ABBERATION_OFFSET)) + NUM_HALF);
+                vec2 lens_g = ((uv - NUM_HALF) * (NUM_ONE - roundedBox * (LENS_MULTIPLIER)) + NUM_HALF);
+                vec2 lens_b = ((uv - NUM_HALF) * (NUM_ONE - roundedBox * (LENS_MULTIPLIER-ABBERATION_OFFSET)) + NUM_HALF);
 
-                float blend = transition; // 0 at edge, 1 deep inside
                 vec4 baseSample = texture2D(iChannel0, uv);
-                vec4 accum = baseSample * (NUM_ONE - blend);
-                float total = (NUM_ONE - blend);
+                vec4 accum = baseSample;
+                float total = NUM_ONE;
                 for (float x = -SAMPLE_RANGE; x <= SAMPLE_RANGE; x++) {
                     for (float y = -SAMPLE_RANGE; y <= SAMPLE_RANGE; y++) {
                         vec2 offset = vec2(x, y) * SAMPLE_OFFSET / iResolution.xy;
-                        vec4 s = texture2D(iChannel0, offset + lens);
-                        accum += s * blend;
-                        total += blend;
+                        vec4 s_r = texture2D(iChannel0, offset + lens_r);
+                        vec4 s_g = texture2D(iChannel0, offset + lens_g);
+                        vec4 s_b = texture2D(iChannel0, offset + lens_b);
+                        accum.r += s_r.r;
+                        accum.g += s_g.g;
+                        accum.b += s_b.b;
+                        total += NUM_ONE;
                     }
                 }
                 fragColor = accum / total;
@@ -201,7 +213,8 @@ window.onload = () => {
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
