@@ -8,6 +8,7 @@
 
 body {
     margin: 0;
+    overflow: hidden;
 }
 
 html {
@@ -33,25 +34,11 @@ h2 {
     font-weight: 400;
     margin: 0.125rem;
 }
-
-.background-mask {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    padding: 0;
-    margin: 0;
-    background-color: "rgba(0 0 0 0.1)";
-    backdrop-filter: blur(1.5px);
-}
-
 .container {
     position: relative;
     z-index: 2;
     width: 100%;
-    height: 100vh;
+    height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -95,11 +82,12 @@ h2 {
     left: 0;
     width: 100%;
     height: 100%;
+    background-color: #0f0f0f;
 }
 
 #lgcanvas {
     z-index: 1;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
