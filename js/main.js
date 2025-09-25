@@ -1,5 +1,13 @@
 window.onload = () => {
     const canvas = document.getElementById("particle-canvas");
+    // const image = new Image();
+    // image.src = "img/xp_bliss.webp";
+    // image.onload = () => {
+    //     canvas.width = image.width;
+    //     canvas.height = image.height;
+    //     canvas.getContext("2d").drawImage(image, 0, 0);
+    // }
+
     new Particles({
         walled: false,
         gravity: true,
@@ -31,7 +39,7 @@ window.onload = () => {
     
     const gl = lgcanvas.getContext("webgl");
     const src_canvas = canvas;
-    
+
     const vsSource = `
         attribute vec2 position;
         void main() {
@@ -53,35 +61,32 @@ window.onload = () => {
             const float NUM_ONE = 1.0;
             const float NUM_HALF = 0.5;
             const float NUM_TWO = 2.0;
-            const float POWER_EXPONENT = 5.5;
+            const float POWER_EXPONENT = 9.0;
             const float MASK_MULTIPLIER_1 = 10000.0;
             const float MASK_MULTIPLIER_2 = 9500.0;
             const float MASK_MULTIPLIER_3 = 11000.0;
-            const float LENS_MULTIPLIER = 0.25;
+            const float LENS_MULTIPLIER = 0.5;
             const float MASK_STRENGTH_1 = 8.0;
             const float MASK_STRENGTH_2 = 16.0;
-            const float MASK_STRENGTH_3 = 2.0;
+            const float MASK_STRENGTH_3 = 1.0;
             const float MASK_THRESHOLD_1 = 0.95;
             const float MASK_THRESHOLD_2 = 0.9;
             const float MASK_THRESHOLD_3 = 1.5;
-            const float SAMPLE_RANGE = 2.0;
-            const float SAMPLE_OFFSET = 0.1;
+            const float MASK_THRESHOLD_4 = 2.0;
+            const float SAMPLE_RANGE = 4.0;
+            const float SAMPLE_OFFSET = 0.5;
             const float GRADIENT_RANGE = 0.2;
-            const float GRADIENT_OFFSET = 0.05;
+            const float GRADIENT_OFFSET = 0.075;
             const float GRADIENT_EXTREME = -1000.0;
-            const float LIGHTING_INTENSITY = 0.05;
+            const float LIGHTING_INTENSITY = 0.2;
 
             vec2 uv = fragCoord / iResolution.xy; // scales pixel coord to 0-1
             vec2 center = iCenter.xy;
             vec2 boxSize = iSize.xy / 2.0;
             vec2 boxSizeNorm = (iSize.xy / iResolution.xy) / 2.0;
-
-
-            
             vec2 m2 = (uv - center / iResolution.xy); // offsets uv by the center, resulting in value that can be between -1.0 and 1.0, 0.0 indicates center
 
             float roundedBox = pow(abs(m2.x) / boxSizeNorm.x, POWER_EXPONENT) + pow(abs(m2.y) / boxSizeNorm.y, POWER_EXPONENT);
-
             float rb1 = clamp((NUM_ONE - roundedBox) * MASK_STRENGTH_1, NUM_ZERO, NUM_ONE);
             float rb2 = clamp((MASK_THRESHOLD_1 - roundedBox) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE) -
                 clamp((MASK_THRESHOLD_2 - roundedBox) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE);
@@ -92,7 +97,7 @@ window.onload = () => {
             float transition = smoothstep(NUM_ZERO, NUM_ONE, rb1 + rb2);
 
             if (transition > NUM_ZERO) {
-                vec2 lens = ((uv - NUM_HALF) * NUM_ONE * (NUM_ONE - roundedBox * LENS_MULTIPLIER) + NUM_HALF);
+                vec2 lens = ((uv - NUM_HALF) * (NUM_ONE - rb3 * LENS_MULTIPLIER) + NUM_HALF);
 
                 float blend = transition; // 0 at edge, 1 deep inside
                 vec4 baseSample = texture2D(iChannel0, uv);
@@ -177,20 +182,28 @@ window.onload = () => {
     let centerY = textDiv.offsetTop + textDiv.offsetHeight / 2;
     let center = [centerX, centerY];
 
+    
+
     let sizeX = textDiv.offsetWidth;
     let sizeY = textDiv.offsetHeight;
     let size = [sizeX, sizeY];
 
-    const texture = gl.createTexture();
-    const setupTexture = () => {
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src_canvas);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    }
+    window.addEventListener("resize", () => {
+        centerX = textDiv.offsetLeft + textDiv.offsetWidth / 2;
+        centerY = textDiv.offsetTop + textDiv.offsetHeight / 2;
+        center = [centerX, centerY];
 
-    setupTexture();
+        sizeX = textDiv.offsetWidth;
+        sizeY = textDiv.offsetHeight;
+        size = [sizeX, sizeY];
+    });
+
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
     const render = () => {
         gl.viewport(0, 0, lgcanvas.width, lgcanvas.height);
@@ -200,8 +213,6 @@ window.onload = () => {
         gl.uniform4f(uniforms.center, center[0], center[1], 0, 0);
         gl.uniform2f(uniforms.size, size[0], size[1]);
 
-
-    
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src_canvas);
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, texture);
