@@ -57,17 +57,17 @@ window.onload = () => {
             const float MASK_MULTIPLIER_1 = 10000.0;
             const float MASK_MULTIPLIER_2 = 9500.0;
             const float MASK_MULTIPLIER_3 = 11000.0;
-            const float LENS_MULTIPLIER = 0.3;
+            const float LENS_MULTIPLIER = 0.25;
             const float MASK_STRENGTH_1 = 8.0;
             const float MASK_STRENGTH_2 = 16.0;
             const float MASK_STRENGTH_3 = 2.0;
             const float MASK_THRESHOLD_1 = 0.95;
             const float MASK_THRESHOLD_2 = 0.9;
             const float MASK_THRESHOLD_3 = 1.5;
-            const float SAMPLE_RANGE = 4.0;
+            const float SAMPLE_RANGE = 2.0;
             const float SAMPLE_OFFSET = 0.1;
             const float GRADIENT_RANGE = 0.2;
-            const float GRADIENT_OFFSET = 0.01;
+            const float GRADIENT_OFFSET = 0.05;
             const float GRADIENT_EXTREME = -1000.0;
             const float LIGHTING_INTENSITY = 0.05;
 
@@ -180,8 +180,17 @@ window.onload = () => {
     let sizeX = textDiv.offsetWidth;
     let sizeY = textDiv.offsetHeight;
     let size = [sizeX, sizeY];
-    console.log(size);
 
+    const texture = gl.createTexture();
+    const setupTexture = () => {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src_canvas);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    }
+
+    setupTexture();
 
     const render = () => {
         gl.viewport(0, 0, lgcanvas.width, lgcanvas.height);
@@ -191,23 +200,14 @@ window.onload = () => {
         gl.uniform4f(uniforms.center, center[0], center[1], 0, 0);
         gl.uniform2f(uniforms.size, size[0], size[1]);
 
-        const texture = gl.createTexture();
-        const setupTexture = () => {
-            gl.bindTexture(gl.TEXTURE_2D, texture);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src_canvas);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        }
-    
-        setupTexture();
 
+    
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src_canvas);
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.uniform1i(uniforms.texture, 0);
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-        gl.deleteTexture(texture);
 
         requestAnimationFrame(render);
     }
