@@ -1,64 +1,96 @@
+let copyVideo = false;
+
+function setupVideo(url) {
+    const vid = document.createElement("video");
+    let playing = false;
+    let timeupdate = false;
+    
+    vid.playsInline = true;
+    vid.muted = true;
+    vid.loop = true;
+
+    vid.addEventListener("playing", () => {
+        playing = true;
+        checkReady();
+    }, true);
+    
+    vid.addEventListener("timeupdate", () => {
+        timeupdate = true;
+        checkReady();
+    }, true);
+
+    vid.src = url;
+    vid.play();
+
+    function checkReady() {
+        if (playing && timeupdate) {
+            // console.log('ready!');
+            copyVideo = true;
+        }
+    }
+
+    return vid;
+};
+
 window.onload = () => {
-    const canvas = document.getElementById("particle-canvas");
+    const img = document.getElementById("backdrop");
     const lgcanvas = document.getElementById("lgcanvas");
     let textDiv = document.getElementById("textContent");
+
+    let ratio = Math.ceil(window.devicePixelRatio);
+
+    let resolutionX = lgcanvas.width;
+    let resolutionY = lgcanvas.height;
+    let resolution = [resolutionX, resolutionY];
     
-    let centerX = textDiv.offsetLeft + textDiv.offsetWidth / 2;
-    let centerY = textDiv.offsetTop + textDiv.offsetHeight / 2;
+    let centerX = (textDiv.offsetLeft + textDiv.offsetWidth / 2) * ratio;
+    let centerY = (textDiv.offsetTop + textDiv.offsetHeight / 2) * ratio;
     let center = [centerX, centerY];
 
-    let sizeX = textDiv.offsetWidth;
-    let sizeY = textDiv.offsetHeight;
+    let sizeX = textDiv.offsetWidth * ratio;
+    let sizeY = textDiv.offsetHeight * ratio;
     let size = [sizeX, sizeY];
 
+    let mouseX = centerX;
+    let mouseY = centerY;
+    let mouse = [mouseX, mouseY];
+
     resizeCanvases = () => {
-        const ratio = Math.ceil(window.devicePixelRatio);
-        canvas.width = window.innerWidth * ratio;
-        canvas.height = window.innerHeight * ratio;
-        lgcanvas.width = window.innerWidth * ratio;
-        lgcanvas.height = window.innerHeight * ratio;
+        ratio = Math.ceil(window.devicePixelRatio);
+
         centerX = (textDiv.offsetLeft + textDiv.offsetWidth / 2) * ratio;
         centerY = (textDiv.offsetTop + textDiv.offsetHeight / 2) * ratio;
         center = [centerX, centerY];
 
+        resolutionX = window.innerWidth * ratio;
+        resolutionY = window.innerHeight * ratio;
+        resolution = [resolutionX, resolutionY];
+
+        lgcanvas.width = resolutionX;
+        lgcanvas.height = resolutionY;
+
         sizeX = textDiv.offsetWidth * ratio;
         sizeY = textDiv.offsetHeight * ratio;
         size = [sizeX, sizeY];
+
+        // console.log([centerX, centerY]);
+        // console.log([lgcanvas.width, lgcanvas.height]);
+        // console.log([sizeX, sizeY]);
     }
     resizeCanvases();
     window.addEventListener("resize", resizeCanvases);
 
+    const mouseMove = (e) => {
+        const ratio = Math.ceil(window.devicePixelRatio);
 
+        mouseX = e.x * ratio;
+        mouseY = window.innerHeight * ratio - e.y * ratio;
+        mouse = [mouseX, mouseY];
+        // console.log(mouse);
+    };
+    window.addEventListener("mousemove", mouseMove);
 
-    window.addEventListener("resize", () => {
-
-    });
-
-    new Particles({
-        walled: false,
-        gravity: true,
-        falling: false, 
-        telportWalls: true,
-        interactive: false,
-        repel: false,
-        particleColor: "rgb(255,255,255)",
-        backgroundColor: "rgba(0,0,0,100)",
-        connected: false,
-        random: {
-            number: 200,
-            minMass: 0.2,
-            maxMass: 0.4,
-            minDx: -0.6,
-            maxDx: 0.6,
-            minDy: -0.6,
-            maxDy: 0.6,
-        },
-    }, canvas).start();
-
-
-    
     const gl = lgcanvas.getContext("webgl");
-    const src_canvas = canvas;
 
     const vsSource = `
         attribute vec2 position;
@@ -68,109 +100,153 @@ window.onload = () => {
     `;
     
     const fsSource = `
-        precision mediump float;
+        precision highp float;
 
         uniform vec3 iResolution;
         uniform vec4 iCenter;
         uniform vec2 iSize;
         uniform sampler2D iChannel0;
+        uniform vec2 iMouse;
+        uniform float iPlaying;
 
-        void mainImage(out vec4 fragColor, in vec2 fragCoord)
-        {
+        void main() {
+
             const float NUM_ZERO = 0.0;
             const float NUM_ONE = 1.0;
             const float NUM_HALF = 0.5;
             const float NUM_TWO = 2.0;
-            const float MASK_MULTIPLIER_1 = 10000.0;
-            const float MASK_MULTIPLIER_2 = 9500.0;
-            const float MASK_MULTIPLIER_3 = 11000.0;
-            const float LENS_MULTIPLIER = 0.65;
-            const float MASK_STRENGTH_1 = 8.0;
-            const float MASK_STRENGTH_2 = 16.0;
-            const float MASK_STRENGTH_3 = 2.0;
-            const float MASK_THRESHOLD_1 = 0.95;
-            const float MASK_THRESHOLD_2 = 0.9;
-            const float MASK_THRESHOLD_3 = 1.5;
-            const float SAMPLE_OFFSET = 1.8;
-            const float ABBERATION_OFFSET = 0.05;
-            const float GRADIENT_RANGE = 0.3;
-            const float GRADIENT_OFFSET = 0.1;
-            const float GRADIENT_EXTREME = -1000.0;
-            const float LIGHTING_INTENSITY = 0.1;
 
+            const float LENS_MULTIPLIER = 0.7;
+            const float MASK_STRENGTH_1 = 0.5;
+            const float MASK_STRENGTH_2 = 3.0;
+            const float MASK_THRESHOLD_1 = 0.9;
+            const float MASK_THRESHOLD_2 = 0.2;
+            const float SAMPLE_OFFSET = 2.0;
+            const float ABBERATION_OFFSET = 0.1;
+            const float EDGE_GLOW_RANGE = 1.0;
+            const float EDGE_GLOW_ROTATION = 0.3;
+            const float LIGHTING_INTENSITY = 0.4;
+            
             vec2 invRes = NUM_ONE / iResolution.xy;
-            vec2 uv = fragCoord * invRes; // scales pixel coord to 0-1
+            vec2 uv = gl_FragCoord.xy * invRes; // scales pixel coord to 0-1
             vec2 center = iCenter.xy * invRes;
-            vec2 boxSize = iSize.xy / NUM_TWO;
-            vec2 boxSizeNorm = (iSize.xy * invRes) / NUM_TWO;
-            vec2 m2 = (uv - center); // offsets uv by the center, value in [-1,1], 0 indicates center
+            vec2 boxSize = iSize.xy;
+            vec2 boxSizeNorm = boxSize * invRes;
+            float borderRadius = 0.2;
+            vec2 boxScreenRatio = iResolution.xy / boxSize;
+            vec2 posOffset = (iCenter.xy - (boxSize * NUM_HALF)) * invRes; 
 
-            // Compute s^8 via multiplications instead of pow(s, 8.0)
-            float sx = abs(m2.x) / boxSizeNorm.x;
-            float sy = abs(m2.y) / boxSizeNorm.y;
-            float sx2 = sx * sx;
-            float sy2 = sy * sy;
-            float sx4 = sx2 * sx2;
-            float sy4 = sy2 * sy2;
-            float roundedBox = sx4 * sx4 + sy4 * sy4;
+            float videoAspect = 1920.0 / 1080.0;
+            float canvasAspect = iResolution.x / iResolution.y;
+            vec2 adjusted_uv = uv;
+            if (canvasAspect > videoAspect) {
+                float sc = videoAspect / canvasAspect;
+                adjusted_uv.y = (adjusted_uv.y - 0.5) * sc + 0.5;
+            } else {
+                float sc = canvasAspect / videoAspect;
+                adjusted_uv.x = (adjusted_uv.x - 0.5) * sc + 0.5;
+            }
+            gl_FragColor = texture2D(iChannel0, uv);
 
-            float rb1 = clamp((NUM_ONE - roundedBox) * MASK_STRENGTH_1, NUM_ZERO, NUM_ONE);
-            float rb2 = clamp((MASK_THRESHOLD_1 - roundedBox) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE) -
-                        clamp((MASK_THRESHOLD_2 - roundedBox) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE);
-            float rb3 = clamp((MASK_THRESHOLD_3 - roundedBox) * MASK_STRENGTH_3, NUM_ZERO, NUM_ONE) -
-                        clamp((NUM_ONE - roundedBox) * MASK_STRENGTH_3, NUM_ZERO, NUM_ONE);
+            // Only supports rectangles that are wider than they are tall
+            vec2 m2 = uv - posOffset;
+            m2 = m2 * boxScreenRatio;
+            
+            float width = NUM_ONE;
+            float height = NUM_ONE;
+            float halfHeight = height * NUM_HALF - borderRadius;
+            float halfWidth = width * NUM_HALF - borderRadius;
 
-            fragColor = vec4(NUM_ZERO);
-            float transition = smoothstep(NUM_ZERO, NUM_ONE, rb1 + rb2);
+            vec2 rectCenter = vec2(NUM_HALF, NUM_ONE);
+            float yCoord = NUM_HALF;
+            
 
-            if (transition > NUM_ZERO) {
+            vec2 lineSegmentX = vec2(center.x - halfWidth, center.x + halfWidth);
+            vec2 lineSegmentY = vec2(yCoord - halfHeight, yCoord + halfHeight);
+            float nearest_x = clamp(m2.x, lineSegmentX.x, lineSegmentX.y);
+            float nearest_y = clamp(m2.y, lineSegmentY.x, lineSegmentY.y);
+            vec2 pointOnLineSegment = vec2(nearest_x, nearest_y);
+            float br_scale = NUM_ONE / (borderRadius);
+            float roundedBoxSdf = NUM_ONE - distance(m2, pointOnLineSegment) * br_scale;
+
+            roundedBoxSdf = smoothstep(NUM_ZERO, NUM_ONE, roundedBoxSdf);
+            
+
+
+            float rb1 = clamp((NUM_ONE - roundedBoxSdf) * MASK_STRENGTH_1, NUM_ZERO, NUM_ONE);
+            float rb2 = clamp((MASK_THRESHOLD_1 - roundedBoxSdf) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE) -
+                        clamp((MASK_THRESHOLD_2 - roundedBoxSdf) * MASK_STRENGTH_2, NUM_ZERO, NUM_ONE);
+
+
+            if (roundedBoxSdf > NUM_ZERO) {
+                float scale = 45.0;
+                float transition = NUM_ONE/(scale*roundedBoxSdf);
+
                 // Chromatic lensing coordinates (one per channel)
-                vec2 lens_r = (uv - NUM_HALF) * (NUM_ONE - roundedBox * (LENS_MULTIPLIER + ABBERATION_OFFSET)) + NUM_HALF;
-                vec2 lens_g = (uv - NUM_HALF) * (NUM_ONE - roundedBox * (LENS_MULTIPLIER)) + NUM_HALF;
-                vec2 lens_b = (uv - NUM_HALF) * (NUM_ONE - roundedBox * (LENS_MULTIPLIER - ABBERATION_OFFSET)) + NUM_HALF;
+                vec2 lens_r = (adjusted_uv - NUM_HALF) * (NUM_ONE + transition * (LENS_MULTIPLIER + ABBERATION_OFFSET)) + NUM_HALF;
+                vec2 lens_g = (adjusted_uv - NUM_HALF) * (NUM_ONE + transition * (LENS_MULTIPLIER)) + NUM_HALF;
+                vec2 lens_b = (adjusted_uv - NUM_HALF) * (NUM_ONE + transition * (LENS_MULTIPLIER - ABBERATION_OFFSET)) + NUM_HALF;
 
                 // 5-tap cross blur per channel (center + 4 cardinal). 15 total texture reads.
-                vec2 dx = vec2(SAMPLE_OFFSET * invRes.x, 0.0);
-                vec2 dy = vec2(0.0, SAMPLE_OFFSET * invRes.y);
+                vec2 dx = vec2(SAMPLE_OFFSET * invRes.x, NUM_ZERO);
+                vec2 dy = vec2(NUM_ZERO, SAMPLE_OFFSET * invRes.y);
 
-                vec3 accum = vec3(0.0);
-                accum.r += texture2D(iChannel0, lens_r).r;
-                accum.g += texture2D(iChannel0, lens_g).g;
-                accum.b += texture2D(iChannel0, lens_b).b;
-
-                accum.r += texture2D(iChannel0, lens_r + dx).r;
-                accum.g += texture2D(iChannel0, lens_g + dx).g;
-                accum.b += texture2D(iChannel0, lens_b + dx).b;
-
-                accum.r += texture2D(iChannel0, lens_r - dx).r;
-                accum.g += texture2D(iChannel0, lens_g - dx).g;
-                accum.b += texture2D(iChannel0, lens_b - dx).b;
+                vec3 accum = vec3(NUM_ZERO);
+                // Unrolled 5-tap sampling
+                
+                // accum.r += texture2D(iChannel0, lens_r + dx + dy).r;
+                // accum.g += texture2D(iChannel0, lens_g + dx + dy).g;
+                // accum.b += texture2D(iChannel0, lens_b + dx + dy).b;
 
                 accum.r += texture2D(iChannel0, lens_r + dy).r;
                 accum.g += texture2D(iChannel0, lens_g + dy).g;
                 accum.b += texture2D(iChannel0, lens_b + dy).b;
 
+                // accum.r += texture2D(iChannel0, lens_r - dx + dy).r;
+                // accum.g += texture2D(iChannel0, lens_g - dx + dy).g;
+                // accum.b += texture2D(iChannel0, lens_b - dx + dy).b;
+
+                accum.r += texture2D(iChannel0, lens_r + dx).r;
+                accum.g += texture2D(iChannel0, lens_g + dx).g;
+                accum.b += texture2D(iChannel0, lens_b + dx).b;
+
+                // Center sample
+                accum.r += texture2D(iChannel0, lens_r).r;
+                accum.g += texture2D(iChannel0, lens_g).g;
+                accum.b += texture2D(iChannel0, lens_b).b;
+
+                accum.r += texture2D(iChannel0, lens_r - dx).r;
+                accum.g += texture2D(iChannel0, lens_g - dx).g;
+                accum.b += texture2D(iChannel0, lens_b - dx).b;
+
+                // accum.r += texture2D(iChannel0, lens_r + dx - dy).r;
+                // accum.g += texture2D(iChannel0, lens_g + dx - dy).g;
+                // accum.b += texture2D(iChannel0, lens_b + dx - dy).b;
+
                 accum.r += texture2D(iChannel0, lens_r - dy).r;
                 accum.g += texture2D(iChannel0, lens_g - dy).g;
                 accum.b += texture2D(iChannel0, lens_b - dy).b;
 
-                vec4 blurred = vec4(accum / 5.0, 1.0);
+                // accum.r += texture2D(iChannel0, lens_r - dx - dy).r;
+                // accum.g += texture2D(iChannel0, lens_g - dx - dy).g;
+                // accum.b += texture2D(iChannel0, lens_b - dx - dy).b;
 
-                float gradient = clamp((clamp(m2.y, NUM_ZERO, GRADIENT_RANGE) + GRADIENT_OFFSET) / NUM_TWO, NUM_ZERO, NUM_ONE) +
-                                 clamp((clamp(-m2.y, GRADIENT_EXTREME, GRADIENT_RANGE) * rb3 + GRADIENT_OFFSET) / NUM_TWO, NUM_ZERO, NUM_ONE);
-                vec4 lighting = clamp(blurred + vec4(rb1) * gradient + vec4(rb2) * LIGHTING_INTENSITY, NUM_ZERO, NUM_ONE);
+                vec4 blurred = vec4(accum / 5.0, NUM_ONE);
 
-                fragColor = mix(texture2D(iChannel0, uv), lighting, transition);
+                float grad_cos = cos(EDGE_GLOW_ROTATION);
+                float grad_sin = sin(EDGE_GLOW_ROTATION);
+                float grad_y = (m2.x-NUM_HALF) * grad_sin + (m2.y-NUM_HALF) * grad_cos;
+                float edge_glow = smoothstep(NUM_ZERO, EDGE_GLOW_RANGE, abs(grad_y));
+
+                // vec4 lighting = clamp(blurred + vec4(rb1) * edge_glow + vec4(LIGHTING_INTENSITY), NUM_ZERO, NUM_ONE);
+                vec4 lighting = mix(clamp(blurred + vec4(rb1) * edge_glow, NUM_ZERO, NUM_ONE), vec4(1.0, 1.0, 1.0, 1.0), vec4(LIGHTING_INTENSITY));
+                gl_FragColor = mix(texture2D(iChannel0, adjusted_uv), lighting, clamp(NUM_ZERO, NUM_ONE, scale*roundedBoxSdf));
             } else {
-                fragColor = texture2D(iChannel0, uv);
+                gl_FragColor = texture2D(iChannel0, adjusted_uv);
             }
         }
-
-        void main() {
-            mainImage(gl_FragColor, gl_FragCoord.xy);
-        }
     `;
-    
+
     const createShader = (type, source) => {
         const shader = gl.createShader(type);
         gl.shaderSource(shader, source);
@@ -217,31 +293,39 @@ window.onload = () => {
         center: gl.getUniformLocation(program, "iCenter"),
         texture: gl.getUniformLocation(program, "iChannel0"),
         size: gl.getUniformLocation(program, "iSize"),
+        mouse: gl.getUniformLocation(program, "iMouse"),
+        playing: gl.getUniformLocation(program, "iPlaying"),
     }
 
- 
+    // function isPowerOf2(value) {
+    //     return (value & (value - 1)) === 0;
+    // }
 
     const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
+    const video = setupVideo("img/output2.mp4");
     const allocateTexture = () => {
+        const slot = 0
         gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        // if (isPowerOf2(img.width) && isPowerOf2(img.height)) {
+        //     gl.generateMipmap(gl.TEXTURE_2D);
+        // } else {
+        //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        // }
         gl.texImage2D(
             gl.TEXTURE_2D,
             0,
             gl.RGBA,
-            lgcanvas.width,
-            lgcanvas.height,
-            0,
             gl.RGBA,
             gl.UNSIGNED_BYTE,
-            null
+            img,
         );
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        // console.log('initialized texture...');
     };
 
     // Initial allocation and reallocate on resize
@@ -249,17 +333,28 @@ window.onload = () => {
     window.addEventListener("resize", allocateTexture);
 
     const render = () => {
-        gl.viewport(0, 0, lgcanvas.width, lgcanvas.height);
+        gl.viewport(0, 0, resolution[0], resolution[1]);
         gl.clear(gl.COLOR_BUFFER_BIT);
-
-        gl.uniform3f(uniforms.resoulution, lgcanvas.width, lgcanvas.height, 1.0);
+        if (copyVideo) {
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+            // console.log('allocated new texture...');
+        }
+        gl.uniform3f(uniforms.resoulution, resolution[0], resolution[1], 1.0);
         gl.uniform4f(uniforms.center, center[0], center[1], 0, 0);
         gl.uniform2f(uniforms.size, size[0], size[1]);
+        gl.uniform2f(uniforms.mouse, mouse[0], mouse[1]);
+        gl.uniform1f(uniforms.playing, copyVideo === true ? 1 : 0);
 
-        gl.activeTexture(gl.TEXTURE0);
+        gl.activeTexture(gl.TEXTURE0+0);
         gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, src_canvas);
         gl.uniform1i(uniforms.texture, 0);
+
+        // gl.activeTexture(gl.TEXTURE0);
+        // gl.bindTexture(gl.TEXTURE_2D, texture);
+        // gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, lgcanvas.width, lgcanvas.height, gl.RGBA, gl.UNSIGNED_BYTE, src_canvas);
+        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src_canvas);
+        // gl.uniform1i(uniforms.texture, 0);
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
