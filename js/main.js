@@ -16,6 +16,8 @@ function setupVideo(url) {
         checkReady();
     }, true);
 
+    vid.onpause = () => video.play();
+
     function checkReady() {
         if (playing) {
             // console.log('ready!');
@@ -26,10 +28,9 @@ function setupVideo(url) {
     vid.src = url;
     vid.play();
 
-
-
     return vid;
 };
+
 
 window.onload = () => {
     const img = document.getElementById("backdrop");
@@ -307,6 +308,7 @@ window.onload = () => {
 
     const texture = gl.createTexture();
     const video = setupVideo("img/output2.mp4");
+
     const allocateTexture = () => {
         const slot = 0
         gl.bindTexture(gl.TEXTURE_2D, texture);
