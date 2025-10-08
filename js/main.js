@@ -1,9 +1,11 @@
+const fadeMs = 200;
+let pageStart = Date.now();
+let fadePercent = Math.min(1, (Date.now() - pageStart) / fadeMs);
 let copyVideo = false;
 
 function setupVideo(url) {
     const vid = document.createElement("video");
     let playing = false;
-    let timeupdate = false;
     
     vid.playsInline = true;
     vid.muted = true;
@@ -13,21 +15,19 @@ function setupVideo(url) {
         playing = true;
         checkReady();
     }, true);
-    
-    vid.addEventListener("timeupdate", () => {
-        timeupdate = true;
-        checkReady();
-    }, true);
-
-    vid.src = url;
-    vid.play();
 
     function checkReady() {
-        if (playing && timeupdate) {
+        if (playing) {
             // console.log('ready!');
             copyVideo = true;
         }
     }
+
+    vid.src = url;
+    // setTimeout(() => vid.play(), fadeMs);
+    vid.play();
+
+
 
     return vid;
 };
@@ -108,6 +108,7 @@ window.onload = () => {
         uniform sampler2D iChannel0;
         uniform vec2 iMouse;
         uniform float iPlaying;
+        uniform float iFadePercent;
 
         void main() {
 
@@ -122,7 +123,7 @@ window.onload = () => {
             const float MASK_THRESHOLD_1 = 0.9;
             const float MASK_THRESHOLD_2 = 0.2;
             const float SAMPLE_OFFSET = 2.0;
-            const float ABBERATION_OFFSET = 0.1;
+            const float ABBERATION_OFFSET = 0.175;
             const float EDGE_GLOW_RANGE = 1.0;
             const float EDGE_GLOW_ROTATION = 0.3;
             const float LIGHTING_INTENSITY = 0.4;
@@ -244,6 +245,8 @@ window.onload = () => {
             } else {
                 gl_FragColor = texture2D(iChannel0, adjusted_uv);
             }
+            gl_FragColor = mix(vec4(0.0,0.0,0.0,0.0), gl_FragColor, iFadePercent);
+            
         }
     `;
 
@@ -295,7 +298,8 @@ window.onload = () => {
         size: gl.getUniformLocation(program, "iSize"),
         mouse: gl.getUniformLocation(program, "iMouse"),
         playing: gl.getUniformLocation(program, "iPlaying"),
-    }
+        fadePercent: gl.getUniformLocation(program, "iFadePercent"),
+    };
 
     // function isPowerOf2(value) {
     //     return (value & (value - 1)) === 0;
@@ -336,7 +340,7 @@ window.onload = () => {
         gl.viewport(0, 0, resolution[0], resolution[1]);
         gl.clear(gl.COLOR_BUFFER_BIT);
         if (copyVideo) {
-            gl.bindTexture(gl.TEXTURE_2D, texture);
+            // gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
             // console.log('allocated new texture...');
         }
@@ -349,6 +353,8 @@ window.onload = () => {
         gl.activeTexture(gl.TEXTURE0+0);
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.uniform1i(uniforms.texture, 0);
+        fadePercent = Math.min(1, (Date.now() - pageStart) / fadeMs);
+        gl.uniform1f(uniforms.fadePercent, fadePercent);
 
         // gl.activeTexture(gl.TEXTURE0);
         // gl.bindTexture(gl.TEXTURE_2D, texture);
