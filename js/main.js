@@ -24,7 +24,6 @@ function setupVideo(url) {
     }
 
     vid.src = url;
-    // setTimeout(() => vid.play(), fadeMs);
     vid.play();
 
 
@@ -34,6 +33,7 @@ function setupVideo(url) {
 
 window.onload = () => {
     const img = document.getElementById("backdrop");
+    img.height = window.outerHeight;
     const lgcanvas = document.getElementById("lgcanvas");
     let textDiv = document.getElementById("textContent");
 
