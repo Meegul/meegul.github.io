@@ -16,7 +16,7 @@ function setupVideo(url) {
         checkReady();
     }, true);
 
-    vid.onpause = () => video.play();
+    vid.onpause = () => vid.play();
 
     function checkReady() {
         if (playing) {
@@ -73,10 +73,6 @@ window.onload = () => {
         sizeX = textDiv.offsetWidth * ratio;
         sizeY = textDiv.offsetHeight * ratio;
         size = [sizeX, sizeY];
-
-        // console.log([centerX, centerY]);
-        // console.log([lgcanvas.width, lgcanvas.height]);
-        // console.log([sizeX, sizeY]);
     }
     resizeCanvases();
     window.addEventListener("resize", resizeCanvases);
@@ -307,24 +303,16 @@ window.onload = () => {
     // }
 
     const texture = gl.createTexture();
-    const video = setupVideo("img/output2.mp4");
+    const video = setupVideo("img/speed.mp4");
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
-            setTimeout(() => video.play(), 50); // afterwards, video.paused is false but the video still freezes
+            setTimeout(() => video.play(), 50);
         }
     });
 
     const allocateTexture = () => {
-        const slot = 0
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        // if (isPowerOf2(img.width) && isPowerOf2(img.height)) {
-        //     gl.generateMipmap(gl.TEXTURE_2D);
-        // } else {
-        //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        // }
         gl.texImage2D(
             gl.TEXTURE_2D,
             0,
@@ -336,7 +324,6 @@ window.onload = () => {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        // console.log('initialized texture...');
     };
 
     // Initial allocation and reallocate on resize
@@ -347,9 +334,7 @@ window.onload = () => {
         gl.viewport(0, 0, resolution[0], resolution[1]);
         gl.clear(gl.COLOR_BUFFER_BIT);
         if (copyVideo) {
-            // gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
-            // console.log('allocated new texture...');
         }
         gl.uniform3f(uniforms.resoulution, resolution[0], resolution[1], 1.0);
         gl.uniform4f(uniforms.center, center[0], center[1], 0, 0);
@@ -362,12 +347,6 @@ window.onload = () => {
         gl.uniform1i(uniforms.texture, 0);
         fadePercent = Math.min(1, (Date.now() - pageStart) / fadeMs);
         gl.uniform1f(uniforms.fadePercent, fadePercent);
-
-        // gl.activeTexture(gl.TEXTURE0);
-        // gl.bindTexture(gl.TEXTURE_2D, texture);
-        // gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, lgcanvas.width, lgcanvas.height, gl.RGBA, gl.UNSIGNED_BYTE, src_canvas);
-        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src_canvas);
-        // gl.uniform1i(uniforms.texture, 0);
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
