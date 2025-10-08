@@ -308,6 +308,11 @@ window.onload = () => {
 
     const texture = gl.createTexture();
     const video = setupVideo("img/output2.mp4");
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            setTimeout(() => video.play(), 50); // afterwards, video.paused is false but the video still freezes
+        }
+    });
 
     const allocateTexture = () => {
         const slot = 0
