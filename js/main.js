@@ -63,7 +63,7 @@ window.onload = () => {
         center = [centerX, centerY];
 
         resolutionX = window.innerWidth * ratio;
-        resolutionY = window.innerHeight * ratio;
+        resolutionY = lgcanvas.clientHeight * ratio;
         resolution = [resolutionX, resolutionY];
 
         lgcanvas.width = resolutionX;
